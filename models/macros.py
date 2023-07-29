@@ -1,0 +1,11 @@
+# Text
+NUM_TEXT_TOKENS = 2048
+
+# Audio
+NUM_AUDIO_TOKENS = 1024  # EnCodec RVQ bins
+NUM_MEL_BINS = 100  # BigVGAN bigvgan_24khz_100band
+
+
+# Speaker
+NUM_SPEAKER_CLASSES = 4096
+SPEAKER_EMBEDDING_DIM = 64
