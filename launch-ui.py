@@ -2,6 +2,8 @@ import argparse
 import logging
 import os
 import pathlib
+import time
+import tempfile
 from pathlib import Path
 temp = pathlib.PosixPath
 pathlib.PosixPath = pathlib.WindowsPath
@@ -97,6 +99,19 @@ audio_tokenizer = AudioTokenizer(device)
 # ASR
 whisper_model = whisper.load_model("medium").cpu()
 
+def clear_prompts():
+    try:
+        path = tempfile.gettempdir()
+        for eachfile in os.listdir(path):
+            filename = os.path.join(path, eachfile)
+            if os.path.isfile(filename) and filename.endswith(".npz"):
+                lastmodifytime = os.stat(filename).st_mtime
+                endfiletime = time.time() - 60
+                if endfiletime > lastmodifytime:
+                    os.remove(filename)
+    except:
+        return
+
 def transcribe_one(model, audio_path):
     # load audio and pad/trim it to fit 30 seconds
     audio = whisper.load_audio(audio_path)
@@ -123,6 +138,7 @@ def transcribe_one(model, audio_path):
 
 def make_npz_prompt(name, uploaded_audio, recorded_audio):
     global model, text_collater, text_tokenizer, audio_tokenizer
+    clear_prompts()
     audio_prompt = uploaded_audio if uploaded_audio is not None else recorded_audio
     sr, wav_pr = audio_prompt
     wav_pr = torch.FloatTensor(wav_pr) / 32768
@@ -141,11 +157,12 @@ def make_npz_prompt(name, uploaded_audio, recorded_audio):
         ]
     )
 
-    # save as npz file
-    np.savez(f"./prompts/{name}.npz", audio_tokens=audio_tokens, text_tokens=text_tokens, lang_code=lang2code[lang_pr])
+    message = f"Detected language: {lang_pr}\n Detected text {text_pr}\n"
 
-    message = f"Detected language: {lang_pr}\n Detected text {text_pr}\n prompt successfully saved to ./prompts/{name}.npz!"
-    return message
+    # save as npz file
+    np.savez(os.path.join(tempfile.gettempdir(), f"{name}.npz"),
+             audio_tokens=audio_tokens, text_tokens=text_tokens, lang_code=lang2code[lang_pr])
+    return message, os.path.join(tempfile.gettempdir(), f"{name}.npz")
 
 
 def make_prompt(name, wav, sr, save=True):
@@ -236,7 +253,7 @@ def infer_from_audio(text, language, accent, audio_prompt, record_audio_prompt):
 def infer_from_prompt(text, language, accent, prompt_file):
     # onload model
     model.to(device)
-
+    clear_prompts()
     # text to synthesize
     lang_token = langdropdown2token[language]
     lang = token2lang[lang_token]
@@ -309,25 +326,27 @@ def main():
                               outputs=[text_output, audio_output])
                     textbox_mp = gr.TextArea(label="Prompt name",
                                           placeholder="Name your prompt here",
-                                          value="", elem_id=f"prompt-name")
+                                          value="prompt_1", elem_id=f"prompt-name")
                     btn_mp = gr.Button("Make prompt!")
+                    prompt_output = gr.File(interactive=False)
                     btn_mp.click(make_npz_prompt,
                                 inputs=[textbox_mp, upload_audio_prompt, record_audio_prompt],
-                                outputs=[text_output])
+                                outputs=[text_output, prompt_output])
         with gr.Tab("Make prompt"):
             with gr.Row():
                 with gr.Column():
                     textbox2 = gr.TextArea(label="Prompt name",
                                           placeholder="Name your prompt here",
-                                          value="", elem_id=f"prompt-name")
+                                          value="prompt_1", elem_id=f"prompt-name")
                     upload_audio_prompt_2 = gr.Audio(label='uploaded audio prompt', source='upload', interactive=True)
                     record_audio_prompt_2 = gr.Audio(label='recorded audio prompt', source='microphone', interactive=True)
                 with gr.Column():
                     text_output_2 = gr.Textbox(label="Message")
+                    prompt_output_2 = gr.File(interactive=False)
                     btn_2 = gr.Button("Make!")
                     btn_2.click(make_npz_prompt,
                               inputs=[textbox2, upload_audio_prompt_2, record_audio_prompt_2],
-                              outputs=[text_output_2])
+                              outputs=[text_output_2, prompt_output_2])
         with gr.Tab("Infer from prompt"):
             with gr.Row():
                 with gr.Column():
@@ -347,7 +366,7 @@ def main():
                               inputs=[textbox_3, language_dropdown_3, accent_dropdown_3, prompt_file],
                               outputs=[text_output_3, audio_output_3])
 
-    app.launch(share=True)
+    app.launch()
 
 if __name__ == "__main__":
     formatter = (
