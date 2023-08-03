@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="generator" content="Hugo 0.88.1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/github.min.css">
+	<link rel="stylesheet" href="../css/custom.css">
+	<link rel="stylesheet" href="../css/normalize.css">
+
+	<title>VALL-E</title>
+	<link href="../css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+
+</head>
+
+<body data-new-gr-c-s-check-loaded="14.1091.0" data-gr-ext-installed="">
+
+<div class="container" >
+<header role="banner">
+</header>
+<main role="main">
+<article itemscope itemtype="https://schema.org/BlogPosting">
+
+<div class="container pt-5 mt-5 shadow p-5 mb-5 bg-white rounded">
+	<div class="text-center">
+	<h1>
+        Demo of reproduced VALL-E X
+    </h1>
+	</div>
+    <h3>
+        Original description from Microsoft
+    </h3>
+	<p>
+        VALL-E X can synthesize personalized speech in another language for a monolingual speaker.
+        Taking the phoneme sequences derived from the source and target text, and the source acoustic tokens
+        derived from an audio codec model as prompts, VALL-E X is able to produce the acoustic tokens in the
+        target language, which can be then decompressed to the target speech waveform. Thanks to its powerful
+        in-context learning capabilities, VALL-E X does not require cross-lingual speech data of the same
+        speakers for training and can perform various zero-shot cross-lingual speech generation tasks, such as
+        cross-lingual text-to-speech synthesis and speech-to-speech translation.
+    </p>
+
+    <h3>
+        Additional description for reproduced model
+    </h3>
+    <table>
+      <tr>
+        <th>Data used for training</th>
+        <th>English</th>
+        <th>Chinese</th>
+        <th>Japanese</th>
+      </tr>
+      <tr>
+        <td>Microsoft's</td>
+        <td>LibriLight (70k+ hours)</td>
+        <td>Wenet Speech (10k+ hours)</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td>Ours (reproduced)</td>
+        <td>LibriTTS + self-gathered (704 hours)</td>
+        <td>Aishell 1, 3, Aidatatang + self-gathered (598 hours)</td>
+        <td>JP commonvoice + self-gathered (437 hours)</td>
+      </tr>
+    </table>
+	<p>
+        Unlike Microsoft's original model, the reproduced version does not contain the Speech-to-speech translation (S2ST)
+        module (it requires additional training), but this functionality can be achieved by using Google Translate API.
+    </p>
+        <br>
+        VALL-E paper: <a href="https://arxiv.org/pdf/2301.02111.pdf">Neural Codec Language Models are Zero-Shot Text to Speech Synthesizers</a>
+		<br>
+        <br>
+        VALL-E X paper: <a href="https://arxiv.org/pdf/2303.03926">Speak Foreign Languages with Your Own Voice: Cross-Lingual Neural Codec Language Modeling</a>
+		<br>
+        <br>
+		official demo page: <a href="https://www.microsoft.com/en-us/research/project/vall-e-x/vall-e/">https://www.microsoft.com/en-us/research/project/vall-e-x/vall-e/</a>
+		<br>
+        <br>
+        UI & API for usage: <a href="https://github.com/Plachtaa/vallex-webui">https://github.com/Plachtaa/vallex-webui</a>
+        <br>
+		<br>
+		Training code from: <a href="https://github.com/lifeiteng/vall-e">https://github.com/lifeiteng/vall-e</a>
+		<br><br>
+		This page is for showing reproduced results only.
+		<br><br>
+
+</div>
+
+<div class="container pt-5 mt-5 shadow p-5 mb-5 bg-white rounded">
+	<h2 id="model-overview" style="text-align: center;">Model Overview</h2>
+	<body>
+	<p style="text-align: center;">
+		<img src="./images/vallex_framework.jpg" height="400" width="800">
+	</p>
+	</body>
+		<p>
+		VALL-E X can synthesize personalized speech in another language for a monolingual speaker.
+            Taking the phoneme sequences derived from the source and target text, and the source acoustic tokens
+            derived from an audio codec model as prompts, VALL-E X is able to produce the acoustic tokens in the
+            target language, which can be then decompressed to the target speech waveform. Thanks to its powerful
+            in-context learning capabilities, VALL-E X does not require cross-lingual speech data of the same speakers
+            for training and can perform various zero-shot cross-lingual speech generation tasks, such as cross-lingual
+            text-to-speech synthesis and speech-to-speech translation.
+		</p>
+</div>
+
+
+<div class="container pt-5 mt-5 shadow p-5 mb-5 bg-white rounded">
+	<h2 id="librispeech-samples" style="text-align: center;">LibriSpeech Samples</h2>
+		<div class="table-responsive pt-3">
+			<table class="table table-hover pt-2">
+			<thead>
+			<tr>
+			<th style="text-align: center">Text</th>
+			<th style="text-align: center">Speaker Prompt</th>
+			<th style="text-align: center">Ground Truth</th>
+			<th style="text-align: center">MS's VALL-E</th>
+			<th style="text-align: center">reproduced VALL-E X</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr><td style="text-align: left;vertical-align:middle;width: 600px">They moved thereafter cautiously about the hut groping before and about them to find something to show that Warrenton had fulfilled his mission.</td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/librispeech/1/librispeech_61-70970-0024_prompt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/librispeech/1/librispeech_61-70970-0024_gt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/librispeech/1/librispeech_61-70970-0024_ours.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/librispeech/1/audio.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			</tr>
+			<tr>
+			<td style="text-align: left;vertical-align:middle;width: 500px">And lay me down in thy cold bed and leave my shining lot.</td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/librispeech/2/librispeech_908-157963-0027_prompt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/librispeech/2/librispeech_908-157963-0027_gt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/librispeech/2/librispeech_908-157963-0027_ours.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/librispeech/2/audio.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			</tr>
+			<tr>
+			<td style="text-align: left;vertical-align:middle;width: 500px">Number ten, fresh nelly is waiting on you, good night husband.</td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/librispeech/3/librispeech_1089-134686-0004_prompt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/librispeech/3/librispeech_1089-134686-0004_gt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/librispeech/3/librispeech_1089-134686-0004_ours.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/librispeech/3/audio.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			</tr>
+			<tr>
+			<td style="text-align: left;vertical-align:middle;width: 500px">Yea, his honourable worship is within, but he hath a godly minister or two with him, and likewise a leech.</td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/librispeech/4/librispeech_1221-135767-0014_prompt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/librispeech/4/librispeech_1221-135767-0014_gt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/librispeech/4/librispeech_1221-135767-0014_ours.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/librispeech/4/audio.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			</tr>
+			</tbody>
+			</table>
+		</div>
+</div>
+
+<div class="container pt-5 mt-5 shadow p-5 mb-5 bg-white rounded">
+	<h2 id="vctk-samples" style="text-align: center;">VCTK Samples</h2>
+		<div class="table-responsive pt-3">
+			<table class="table table-hover pt-2">
+			<thead>
+			<tr>
+			<th style="text-align: center">Text</th>
+			<th style="text-align: center">Speaker Prompt</th>
+			<th style="text-align: center">Ground Truth</th>
+			<th style="text-align: center">MS's VALL-E</th>
+			<th style="text-align: center">reproduced VALL-E X</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr><td style="text-align: left;vertical-align:middle;width: 600px">We have to reduce the number of plastic bags.</td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/vctk/1/vctk_p254_prompt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/vctk/1/vctk_p254_gt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/vctk/1/vctk_p254_ours.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/vctk/1/audio.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			</tr>
+			<tr>
+			<td style="text-align: left;vertical-align:middle;width: 500px">So what is the campaign about?</td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/vctk/2/vctk_p263_prompt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/vctk/2/vctk_p263_gt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/vctk/2/vctk_p263_ours.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/vctk/2/audio.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			</tr>
+			<tr>
+			<td style="text-align: left;vertical-align:middle;width: 500px">My life has changed a lot.</td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/vctk/3/vctk_p273_prompt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/vctk/3/vctk_p273_gt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/vctk/3/vctk_p273_ours.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/vctk/3/audio.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			</tr>
+			<tr>
+			<td style="text-align: left;vertical-align:middle;width: 500px">Nothing is yet confirmed.</td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/vctk/4/vctk_p255_prompt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/vctk/4/vctk_p255_gt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/vctk/4/vctk_p255_ours.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/vctk/4/audio.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			</tr>
+			</tbody>
+			</table>
+		</div>
+</div>
+
+<div class="container pt-5 mt-5 shadow p-5 mb-5 bg-white rounded">
+		<h2 id="Acoustic-Environment-Maintenance" style="text-align: center;">Acoustic Environment Maintenance</h2>
+
+			<p>
+			VALL-E can synthesize personalized speech while maintaining the acoustic environment of the speaker prompt. The audio and transcriptions are sampled from the Fisher dataset.
+			</p>
+
+		<div class="table-responsive pt-3">
+			<table class="table table-hover pt-2">
+			<thead>
+			<tr>
+			<th style="text-align: center">Text</th>
+			<th style="text-align: center">Speaker Prompt</th>
+			<th style="text-align: center">Ground Truth</th>
+			<th style="text-align: center">MS's VALL-E</th>
+			<th style="text-align: center">reproduced VALL-E X</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr>
+			<td style="text-align: left;vertical-align:middle;width: 500px">I think it's like you know um more convenient too.</td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/acou_env_maint/1/fisher_1_pt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/acou_env_maint/1/fisher_1_gt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/acou_env_maint/1/fisher_1_ours.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/acou_env_maint/1/audio.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			</tr>
+			<tr>
+			<td style="text-align: left;vertical-align:middle;width: 500px">Um we have to pay have this security fee just in case she would damage something but um.</td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/acou_env_maint/2/fisher_2_pt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/acou_env_maint/2/fisher_2_gt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/acou_env_maint/2/fisher_2_ours.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/acou_env_maint/2/audio.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			</tr>
+			<tr>
+			<td style="text-align: left;vertical-align:middle;width: 500px">Everything is run by computer but you got to know how to think before you can do a computer.</td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/acou_env_maint/3/fisher_3_pt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/acou_env_maint/3/fisher_3_gt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/acou_env_maint/3/fisher_3_ours.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/acou_env_maint/3/audio.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			</tr>
+			<tr>
+			<td style="text-align: left;vertical-align:middle;width: 500px">As friends thing I definitely I've got more male friends.</td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/acou_env_maint/4/fisher_4_pt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/acou_env_maint/4/fisher_4_gt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/acou_env_maint/4/fisher_4_ours.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/acou_env_maint/4/audio.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			</tr>
+			</tbody>
+			</table>
+		</div>
+</div>
+
+<div class="container pt-5 mt-5 shadow p-5 mb-5 bg-white rounded">
+		<h2 id="Speaker-Emotion-Maintenance" style="text-align: center;">Speaker’s Emotion Maintenance</h2>
+			<p>
+			VALL-E can synthesize personalized speech while maintaining the emotion in the speaker prompt. The audio prompts are sampled from the Emotional Voices Database.
+			</p>
+		<div class="table-responsive pt-3">
+			<table class="table table-hover pt-2">
+			<thead>
+			<tr>
+			<th style="text-align: center">Text</th>
+			<th style="text-align: center">Speaker Prompt</th>
+			<th style="text-align: center">Ground Truth</th>
+			<th style="text-align: center">MS's VALL-E</th>
+			<th style="text-align: center">reproduced VALL-E X</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr>
+			<td rowspan="5" style="text-align: left;vertical-align:middle;width: 500px">We have to reduce the number of plastic bags.</td>
+			<td style="text-align: center;vertical-align:middle;width: 220px">Anger</td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/emotion/anger/emov_db_anger_pt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/emotion/anger/emov_db_anger_ours.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/emotion/anger/audio.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			</tr>
+			<tr>
+			<td style="text-align: center;vertical-align:middle;width: 220px">Sleepy</td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/emotion/sleepy/emov_db_sleepiness_pt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/emotion/sleepy/emov_db_sleepiness_ours.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/emotion/sleepy/audio.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			</tr>
+			<tr>
+			<td style="text-align: center;vertical-align:middle;width: 220px">Neutral</td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/emotion/neutral/emov_db_neutral_pt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/emotion/neutral/emov_db_neutral_ours.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/emotion/neutral/audio.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			</tr>
+			<tr>
+			<td style="text-align: center;vertical-align:middle;width: 220px">Amused</td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/emotion/amused/emov_db_amused_pt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/emotion/amused/emov_db_amused_ours.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/emotion/amused/audio.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			</tr>
+			<tr>
+			<td style="text-align: center;vertical-align:middle;width: 220px">Disgusted</td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/emotion/disgusted/emov_db_disgust_pt.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/emotion/disgusted/emov_db_disgust_ours.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			<td style="text-align: center"><audio controls="controls" style="width: 140px;"><source src="demos/valle/emotion/disgusted/audio.wav" autoplay/>Your browser does not support the audio element.</audio></td>
+			</tr>
+			</tbody>
+			</table>
+		</div>
+</div>
+
+<div class="container pt-5 mt-5 shadow p-5 mb-5 bg-white rounded">
+	<h2 id="Ethics-Statement" style="text-align: center;">Ethics Statement</h2>
+	<p>
+	To avoid abuse, Well-trained models and services will not be provided.
+	</p>
+</div>
+
+</article>
+</main>
+</div>
+
+</body>
+</html>
