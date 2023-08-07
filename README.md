@@ -1,5 +1,5 @@
 # VALL-E X: Multilingual Text-to-Speech Synthesis and Voice Cloning 🔊
-An open source implementation of Microsoft's [VALL-E X](https://arxiv.org/pdf/2303.03926) zero-shot TTS model
+An open source implementation of Microsoft's [VALL-E X](https://arxiv.org/pdf/2303.03926) zero-shot TTS model.
 
 ![vallex-framework](/images/vallex_framework.jpg "VALL-E X framework")
 
@@ -49,12 +49,12 @@ If you find VALL-E X interesting and useful, give us a star on GitHub! ⭐️ It
 
 ## 📜 License
 
-VALL-E X is licensed under the [MIT License](link_to_license).
+VALL-E X is licensed under the [MIT License](./LICENSE).
 
 ---
 
 Let your imagination run wild with VALL-E X, and enjoy the fantastic world of multilingual text-to-speech synthesis and voice cloning! 🌈 🎶
 
-Have questions or need assistance? Reach out to us at support@valle-x-tts.com
+Have questions or need assistance? Feel free to open an issue or join our community (not set yet lol)
 
 Happy voice cloning! 🎤
