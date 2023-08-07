@@ -84,7 +84,7 @@ model = VALLE(
     prepend_bos=True,
     num_quantizers=8,
 )
-checkpoint = torch.load("./epoch-10.pt", map_location='cpu')
+checkpoint = torch.load("./vallex-checkpoint.pt", map_location='cpu')
 missing_keys, unexpected_keys = model.load_state_dict(
     checkpoint["model"], strict=True
 )

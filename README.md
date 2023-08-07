@@ -24,6 +24,13 @@ VALL-E X comes packed with cutting-edge functionalities:
 
 ## 💻 Usage
 
+### Online Demo
+
+Not ready to set up the environment on your local machine just yet? No problem! We've got you covered with our online demos. You can try out VALL-E X directly on Hugging Face or Google Colab, experiencing the model's capabilities hassle-free!
+
+- [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/Plachta/VALL-E-X)
+- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1yyD_sz531QntLKowMHo-XxorsFBCfKul?usp=sharing)
+
 ### API (TODO)
 
 Integrate VALL-E X into your projects with ease using our simple API. The API provides access to all of the model's fantastic functionalities, empowering you to build exciting applications with personalized speech synthesis capabilities.
