@@ -29,8 +29,7 @@ VALL-E X comes packed with cutting-edge functionalities:
 
 Not ready to set up the environment on your local machine just yet? No problem! We've got you covered with our online demos. You can try out VALL-E X directly on Hugging Face or Google Colab, experiencing the model's capabilities hassle-free!
 
-- [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/Plachta/VALL-E-X)
-- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1yyD_sz531QntLKowMHo-XxorsFBCfKul?usp=sharing)
+(To be completed)
 
 ### API (TODO)
 
@@ -45,7 +44,7 @@ Not comfortable with APIs? No problem! We've also created a user-friendly graphi
 Follow these simple steps to get started with VALL-E X:
 
 1. Clone this repository to your local machine.
-2. (To be continued)
+2. (To be completed)
 
 ## 🙌 Contribute
 
