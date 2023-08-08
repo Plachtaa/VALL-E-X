@@ -1,5 +1,6 @@
 # VALL-E X: Multilingual Text-to-Speech Synthesis and Voice Cloning 🔊
-An open source implementation of Microsoft's [VALL-E X](https://arxiv.org/pdf/2303.03926) zero-shot TTS model.
+An open source implementation of Microsoft's [VALL-E X](https://arxiv.org/pdf/2303.03926) zero-shot TTS model.<br>
+**Trained model will be released after this repository is fully ready.**
 
 ![vallex-framework](/images/vallex_framework.jpg "VALL-E X framework")
 
