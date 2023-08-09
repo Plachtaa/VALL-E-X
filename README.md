@@ -13,7 +13,7 @@ VALL-E X comes packed with cutting-edge functionalities:
 
 1. **Multilingual TTS**: Speak in three languages - English, Chinese, and Japanese - with natural and expressive speech synthesis.
 
-![multilingual-tts.mp4](audios/feature_1.mp4)
+[multilingual-tts.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/11b5a789-45ad-4e22-9450-acbe80a3a9d7)
 
 2. **Zero-shot Voice Cloning**: Enroll a short 3~10 seconds recording of an unseen speaker, and watch VALL-E X create personalized, high-quality speech that sounds just like them!
 
