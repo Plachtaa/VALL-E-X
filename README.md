@@ -10,10 +10,8 @@ VALL-E X is an amazing multilingual text-to-speech (TTS) model inspired by Micro
 ## 📢 Features
 
 VALL-E X comes packed with cutting-edge functionalities:
-<details open>
-1. **Multilingual TTS**: Speak in three languages - English, Chinese, and Japanese - with natural and expressive speech synthesis.
 
-[feature_1.webm](https://github.com/Plachtaa/VALL-E-X/blob/master/audios/feature_1.webm)
+1. **Multilingual TTS**: Speak in three languages - English, Chinese, and Japanese - with natural and expressive speech synthesis.
 
 2. **Zero-shot Voice Cloning**: Enroll a short 3~10 seconds recording of an unseen speaker, and watch VALL-E X create personalized, high-quality speech that sounds just like them!
 
@@ -24,7 +22,7 @@ VALL-E X comes packed with cutting-edge functionalities:
 5. **Accent Control**: Get creative with accents! VALL-E X allows you to experiment with different accents, like speaking Chinese with an English accent or vice versa. 🇨🇳 💬
 
 6. **Acoustic Environment Maintenance**: No need for perfectly clean audio prompts! VALL-E X adapts to the acoustic environment of the input, making speech generation feel natural and immersive.
-</details>
+
 ## 💻 Usage
 
 ### Online Demo
