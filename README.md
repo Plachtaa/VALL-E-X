@@ -7,6 +7,24 @@ An open source implementation of Microsoft's [VALL-E X](https://arxiv.org/pdf/23
 ## ⭐️ Welcome to VALL-E X! ⭐️
 
 VALL-E X is an amazing multilingual text-to-speech (TTS) model inspired by Microsoft's groundbreaking research. While Microsoft initially proposed the concept in their research paper, they did not release any code or pretrained models. Recognizing the potential and value of this technology, our team took on the challenge to reproduce the results and train our own model. We are excited to share our trained VALL-E X model with the community, allowing everyone to experience the power of personalized speech synthesis and voice cloning! 🎧
+
+## 💻 Installation
+### Install with pip
+```commandline
+https://github.com/Plachtaa/VALL-E-X.git
+cd VALL-E-X
+pip install --no-error-on-external -r requirements.txt
+```
+### ❗❗❗ Special Notes ❗❗❗
+Japanese g2p tool `pyopenjtalk` may fail to build during installation, you may ignore it if you don't require Japanese TTS functionality.
+We are currently searching for more stable substitution.
+##  🎧 Demos
+Not ready to set up the environment on your local machine just yet? No problem! We've got you covered with our online demos. You can try out VALL-E X directly on Hugging Face or Google Colab, experiencing the model's capabilities hassle-free!
+<br>
+[![Open in Spaces](https://img.shields.io/badge/🤗-Open%20in%20Spaces-blue.svg)]()
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]()
+
+
 ## 📢 Features
 
 VALL-E X comes packed with cutting-edge functionalities:
@@ -59,13 +77,9 @@ https://github.com/Plachtaa/VALL-E-X/assets/112609742/699c47a3-d502-4801-8364-bd
 
 [noise-output.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/1b647ca8-805c-4582-b268-6fa042867412)
 
-## 💻 Usage
+Explore our [demo page](https://plachtaa.github.io/) for a lot more examples!
 
-### Online Demo
-
-Not ready to set up the environment on your local machine just yet? No problem! We've got you covered with our online demos. You can try out VALL-E X directly on Hugging Face or Google Colab, experiencing the model's capabilities hassle-free!
-
-(To be completed)
+## 🐍 Usage in Python
 
 ### API (TODO)
 

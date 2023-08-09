@@ -1,0 +1,14 @@
+numpy
+torch
+torchaudio
+tokenizers
+encodec
+unidecode
+pyopenjtalk
+pypinyin
+inflect
+cn2an
+jieba
+eng_to_ipa
+jieba
+openai-whisper
