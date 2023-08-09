@@ -494,7 +494,10 @@ class VALLE(VALLF):
         x = self.ar_text_embedding(text)
         # Add language embedding
         prompt_language_id = torch.LongTensor(np.array([self.language_ID[prompt_language]])).to(x.device)
-        text_language_id = torch.LongTensor(np.array([self.language_ID[text_language]])).to(x.device)
+        if isinstance(text_language, str):
+            text_language_id = torch.LongTensor(np.array([self.language_ID[text_language]])).to(x.device)
+        elif isinstance(text_language, List):
+            text_language_id = torch.LongTensor(np.array([self.language_ID[tl] for tl in text_language])).to(x.device)
         x[:, :enroll_x_lens, :] += self.ar_language_embedding(prompt_language_id)
         x[:, enroll_x_lens:, :] += self.ar_language_embedding(text_language_id)
         x = self.ar_text_prenet(x)
@@ -600,7 +603,10 @@ class VALLE(VALLF):
         x = self.nar_text_embedding(text)
         # Add language embedding
         prompt_language_id = torch.LongTensor(np.array([self.language_ID[prompt_language]])).to(x.device)
-        text_language_id = torch.LongTensor(np.array([self.language_ID[text_language]])).to(x.device)
+        if isinstance(text_language, str):
+            text_language_id = torch.LongTensor(np.array([self.language_ID[text_language]])).to(x.device)
+        elif isinstance(text_language, List):
+            text_language_id = torch.LongTensor(np.array([self.language_ID[tl] for tl in text_language])).to(x.device)
         x[:, :enroll_x_lens, :] += self.nar_language_embedding(prompt_language_id)
         x[:, enroll_x_lens:, :] += self.nar_language_embedding(text_language_id)
         x = self.nar_text_prenet(x)

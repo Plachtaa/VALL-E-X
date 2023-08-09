@@ -47,6 +47,7 @@ token2lang = {
     '[ZH]': "zh",
     '[JA]': "ja",
     "[EN]": "en",
+    "": "mix"
 }
 
 code2lang = {
@@ -55,13 +56,11 @@ code2lang = {
     2: "en",
 }
 
-
-
 langdropdown2token = {
     'English': "[EN]",
     '中文': "[ZH]",
     '日本語': "[JA]",
-    'mix': "",
+    'Mix': "",
 }
 
 text_tokenizer = PhonemeBpeTokenizer(tokenizer_path="./utils/g2p/bpe_69.json")
@@ -89,14 +88,13 @@ missing_keys, unexpected_keys = model.load_state_dict(
     checkpoint["model"], strict=True
 )
 assert not missing_keys
-model.to('cpu')
 model.eval()
 
 # Encodec model
 audio_tokenizer = AudioTokenizer(device)
 
 # ASR
-whisper_model = whisper.load_model("medium").to(device)
+whisper_model = whisper.load_model("medium").cpu()
 
 def clear_prompts():
     try:
@@ -167,7 +165,7 @@ def make_npz_prompt(name, uploaded_audio, recorded_audio):
 def make_prompt(name, wav, sr, save=True):
 
     global whisper_model
-    # whisper_model.to(device)
+    whisper_model.to(device)
     if not isinstance(wav, torch.FloatTensor):
         wav = torch.tensor(wav)
     if wav.abs().max() > 1:
@@ -187,13 +185,14 @@ def make_prompt(name, wav, sr, save=True):
         os.remove(f"./prompts/{name}.wav")
         os.remove(f"./prompts/{name}.txt")
 
-    # whisper_model.cpu()
+    whisper_model.cpu()
     torch.cuda.empty_cache()
     return text, lang
 
 @torch.no_grad()
 def infer_from_audio(text, language, accent, audio_prompt, record_audio_prompt):
     global model, text_collater, text_tokenizer, audio_tokenizer
+    model.to(device)
     audio_prompt = audio_prompt if audio_prompt is not None else record_audio_prompt
     sr, wav_pr = audio_prompt
     wav_pr = torch.FloatTensor(wav_pr)/32768
@@ -213,19 +212,23 @@ def infer_from_audio(text, language, accent, audio_prompt, record_audio_prompt):
 
     # tokenize text
     logging.info(f"synthesize text: {text}")
+    phone_tokens, langs = text_tokenizer.tokenize(text=f"_{text}".strip())
     text_tokens, text_tokens_lens = text_collater(
         [
-            text_tokenizer.tokenize(text=f"{text_pr}{text}".strip())
+            phone_tokens
         ]
     )
 
     enroll_x_lens = None
     if text_pr:
-        _, enroll_x_lens = text_collater(
+        text_prompts, _ = text_tokenizer.tokenize(text=f"{text_pr}".strip())
+        text_prompts, enroll_x_lens = text_collater(
             [
-                text_tokenizer.tokenize(text=f"{text_pr}".strip())
+                text_prompts
             ]
         )
+    text_tokens = torch.cat([text_prompts, text_tokens], dim=-1)
+    text_tokens_lens += enroll_x_lens
     lang = lang if accent == "no-accent" else token2lang[langdropdown2token[accent]]
     encoded_frames = model.inference(
         text_tokens.to(device),
@@ -235,7 +238,7 @@ def infer_from_audio(text, language, accent, audio_prompt, record_audio_prompt):
         top_k=-100,
         temperature=1,
         prompt_language=lang_pr,
-        text_language=lang,
+        text_language=langs if accent == "no-accent" else lang,
     )
     samples = audio_tokenizer.decode(
         [(encoded_frames.transpose(2, 1), None)]
@@ -250,9 +253,8 @@ def infer_from_audio(text, language, accent, audio_prompt, record_audio_prompt):
 
 @torch.no_grad()
 def infer_from_prompt(text, language, accent, prompt_file):
-    # onload model
-    model.to(device)
     clear_prompts()
+    model.to(device)
     # text to synthesize
     lang_token = langdropdown2token[language]
     lang = token2lang[lang_token]
@@ -271,9 +273,10 @@ def infer_from_prompt(text, language, accent, prompt_file):
 
     enroll_x_lens = text_prompts.shape[-1]
     logging.info(f"synthesize text: {text}")
+    phone_tokens, langs = text_tokenizer.tokenize(text=f"_{text}".strip())
     text_tokens, text_tokens_lens = text_collater(
         [
-            text_tokenizer.tokenize(text=f"_{text}".strip())
+            phone_tokens
         ]
     )
     text_tokens = torch.cat([text_prompts, text_tokens], dim=-1)
@@ -288,13 +291,11 @@ def infer_from_prompt(text, language, accent, prompt_file):
         top_k=-100,
         temperature=1,
         prompt_language=lang_pr,
-        text_language=lang,
+        text_language=langs if accent == "no-accent" else lang,
     )
     samples = audio_tokenizer.decode(
         [(encoded_frames.transpose(2, 1), None)]
     )
-
-    # offload model
     model.to('cpu')
     torch.cuda.empty_cache()
 
@@ -356,7 +357,7 @@ def main():
                     textbox_3 = gr.TextArea(label="Text",
                                           placeholder="Type your sentence here",
                                           value="VALLEX can synthesize personalized speech in another language for a monolingual speaker.", elem_id=f"tts-input")
-                    language_dropdown_3 = gr.Dropdown(choices=['English', '中文', '日本語'], value='English',
+                    language_dropdown_3 = gr.Dropdown(choices=['English', '中文', '日本語', 'Mix'], value='English',
                                                     label='language')
                     accent_dropdown_3 = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'], value='no-accent',
                                                   label='accent')

@@ -14,14 +14,15 @@ class PhonemeBpeTokenizer:
 
   def tokenize(self, text):
     # 1. convert text to phoneme
-    phonemes = _clean_text(text, ['cje_cleaners'])
+    phonemes, langs = _clean_text(text, ['cje_cleaners'])
     # 2. replace blank space " " with "_"
     phonemes = phonemes.replace(" ", "_")
     # 3. tokenize phonemes
     phoneme_tokens = self.tokenizer.encode(phonemes).ids
+    assert(len(phoneme_tokens) == len(langs))
     if not len(phoneme_tokens):
-      phoneme_tokens = self.tokenizer.encode(text).ids
-    return phoneme_tokens
+      raise ValueError("Empty text is given")
+    return phoneme_tokens, langs
 
 def text_to_sequence(text, cleaner_names):
   '''Converts a string of text to a sequence of IDs corresponding to the symbols in the text.
@@ -67,5 +68,5 @@ def _clean_text(text, cleaner_names):
     cleaner = getattr(cleaners, name)
     if not cleaner:
       raise Exception('Unknown cleaner: %s' % name)
-    text = cleaner(text)
-  return text
+    text, langs = cleaner(text)
+  return text, langs
