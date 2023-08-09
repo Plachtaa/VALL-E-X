@@ -16,8 +16,8 @@ VALL-E X comes packed with cutting-edge functionalities:
 [multilingual-tts.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/11b5a789-45ad-4e22-9450-acbe80a3a9d7)
 
 2. **Zero-shot Voice Cloning**: Enroll a short 3~10 seconds recording of an unseen speaker, and watch VALL-E X create personalized, high-quality speech that sounds just like them!
-[prompt.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/4f98436f-c7da-496d-ae66-630a6fe0d9f9)
-[output.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/164259ab-6377-4515-b659-d66bfc0b012f)
+[prompt.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/59bcf1a2-1b21-42ec-91cc-9b0b9925df08)
+[output.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/517c77bd-55cd-4ff8-b1c0-3aa0e963a1b2)
 
 3. **Speech Emotion Control**: Experience the power of emotions! VALL-E X can synthesize speech with the same emotion as the acoustic prompt provided, adding an extra layer of expressiveness to your audio.
 
