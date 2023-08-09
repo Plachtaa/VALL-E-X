@@ -17,10 +17,10 @@ VALL-E X comes packed with cutting-edge functionalities:
 
 2. **Zero-shot Voice Cloning**: Enroll a short 3~10 seconds recording of an unseen speaker, and watch VALL-E X create personalized, high-quality speech that sounds just like them!
 
-[prompt.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/59bcf1a2-1b21-42ec-91cc-9b0b9925df08)
+[prompt.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/517c77bd-55cd-4ff8-b1c0-3aa0e963a1b2)
 
 
-[output.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/517c77bd-55cd-4ff8-b1c0-3aa0e963a1b2)
+[output.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/59bcf1a2-1b21-42ec-91cc-9b0b9925df08)
 
 3. **Speech Emotion Control**: Experience the power of emotions! VALL-E X can synthesize speech with the same emotion as the acoustic prompt provided, adding an extra layer of expressiveness to your audio.
 
@@ -50,14 +50,14 @@ https://github.com/Plachtaa/VALL-E-X/assets/112609742/699c47a3-d502-4801-8364-bd
 [zh-accent-output.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/be59c7ca-b45b-44ca-a30d-4d800c950ccc)
 
 
-[en-output.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/81d7c190-71cc-4ab4-8b33-ccccf0de8d06)
+[en-accent-output.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/8b4f4f9b-f299-4ea4-a548-137437b71738)
 
 6. **Acoustic Environment Maintenance**: No need for perfectly clean audio prompts! VALL-E X adapts to the acoustic environment of the input, making speech generation feel natural and immersive.
 
-[noise-prompt.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/c45a0fc4-bb04-4bfb-bc3f-5ba7c275f2ce)
-
-
 [noise-output.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/1b647ca8-805c-4582-b268-6fa042867412)
+
+
+[noise-prompt.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/c45a0fc4-bb04-4bfb-bc3f-5ba7c275f2ce)
 
 ## 💻 Usage
 
