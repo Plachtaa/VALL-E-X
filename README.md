@@ -90,13 +90,6 @@ Integrate VALL-E X into your projects with ease using our simple API. The API pr
 
 Not comfortable with APIs? No problem! We've also created a user-friendly graphical interface for VALL-E X. It allows you to interact with the model effortlessly, making voice cloning and multilingual speech synthesis a breeze.
 
-## 🚀 Getting Started
-
-Follow these simple steps to get started with VALL-E X:
-
-1. Clone this repository to your local machine.
-2. (To be completed)
-
 ## 🙌 Contribute
 
 We welcome contributions from the community to make VALL-E X even better! If you have ideas, bug fixes, or want to add more languages, emotions, or accents to the model, feel free to submit a pull request. Together, we can take VALL-E X to new heights!
