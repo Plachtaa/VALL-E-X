@@ -166,7 +166,7 @@ audio_array = generate_audio(text_prompt, language='mix')
   
 VALL-E X provides tens of speaker voices which you can directly used for inference! Browse all voices in the [code](/presets)
 
-> VALL-E X tries to match the tone, pitch, emotion and prosody of a given preset, and supports free & open custom voice cloning. The model also attempts to preserve music, ambient noise, etc.
+> VALL-E X tries to match the tone, pitch, emotion and prosody of a given preset. The model also attempts to preserve music, ambient noise, etc.
 
 ```python
 text_prompt = """
@@ -179,9 +179,52 @@ audio_array = generate_audio(text_prompt, prompt="dingzhen")
 
 </details>
 
+<details open>
+<summary><h3>🎙Voice Cloning</h3></summary>
+  
+VALL-E X supports voice cloning! You can make a voice prompt with any person, character or even your own voice, and use it as all voice presets.<br>
+To make a voice prompt, you need to provide a speech of 3~10 seconds long, as well as the transcript of the speech. 
+You can also leave the transcript blank to let the [Whisper](https://github.com/openai/whisper) model to generate the transcript.
+> VALL-E X tries to match the tone, pitch, emotion and prosody of a given preset. The model also attempts to preserve music, ambient noise, etc.
+
+```python
+from utils.prompt_making import make_npz_prompt
+
+### Use given transcript
+make_npz_prompt(name="paimon", audio_prompt_path="paimon_prompt.wav",
+                transcript="Just, what was that? Paimon thought we were gonna get eaten.")
+
+### Alternatively, use whisper
+make_npz_prompt(name="paimon", audio_prompt_path="paimon_prompt.wav")
+```
+Now let's try out the prompt we've just made!
+```python
+from utils.generation import SAMPLE_RATE, generate_audio, preload_models
+from scipy.io.wavfile import write as write_wav
+from IPython.display import Audio
+
+# download and load all models
+preload_models()
+
+# generate audio from text
+text_prompt = """
+Hey, Traveler, Listen to this, This machine has taken my voice, and now it can talk just like me!
+"""
+audio_array = generate_audio(text_prompt, prompt="paimon")
+
+# save audio to disk
+write_wav("paimon_cloned.wav", SAMPLE_RATE, audio_array)
+
+# play text in notebook
+Audio(audio_array, rate=SAMPLE_RATE)
+```
+
+</details>
+
+
 ### UI
 
-Not comfortable with APIs? No problem! We've also created a user-friendly graphical interface for VALL-E X. It allows you to interact with the model effortlessly, making voice cloning and multilingual speech synthesis a breeze.
+Not comfortable with codes? No problem! We've also created a user-friendly graphical interface for VALL-E X. It allows you to interact with the model effortlessly, making voice cloning and multilingual speech synthesis a breeze.
 
 ## 🙌 Contribute
 

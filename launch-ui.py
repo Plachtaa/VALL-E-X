@@ -35,7 +35,6 @@ torch.set_num_interop_threads(1)
 torch._C._jit_set_profiling_executor(False)
 torch._C._jit_set_profiling_mode(False)
 torch._C._set_graph_executor_optimize(False)
-# torch.manual_seed(42)
 
 text_tokenizer = PhonemeBpeTokenizer(tokenizer_path="./utils/g2p/bpe_69.json")
 text_collater = get_text_token_collater()
@@ -122,9 +121,10 @@ def make_npz_prompt(name, uploaded_audio, recorded_audio):
     audio_tokens = encoded_frames[0][0].transpose(2, 1).cpu().numpy()
 
     # tokenize text
+    phonemes, _ = text_tokenizer.tokenize(text=f"{text_pr}".strip())
     text_tokens, enroll_x_lens = text_collater(
         [
-            text_tokenizer.tokenize(text=f"{text_pr}".strip())
+            phonemes
         ]
     )
 
