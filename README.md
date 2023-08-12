@@ -132,6 +132,33 @@ Audio(audio_array, rate=SAMPLE_RATE)
 
 </details>
 
+<details open>
+  <summary><h3>🌎 Foreign Language</h3></summary>
+<br>
+This VALL-E X implementation also supports Chinese and Japanese. All three languages have equally awesome performance!
+<br>
+
+```python
+
+text_prompt = """
+    チュソクは私のお気に入りの祭りです。 私は数日間休んで、友人や家族との時間を過ごすことができます。
+"""
+audio_array = generate_audio(text_prompt)
+```
+
+  
+*Note: VALL-E X controls accent perfectly even when synthesizing code-switch text. However, you need to manually denote language of respective sentences (since our g2p tool is rule-base)*
+```python
+text_prompt = """
+    [EN]The Thirty Years' War was a devastating conflict that had a profound impact on Europe.[EN]
+    [ZH]这是历史的开始。 如果您想听更多，请继续。[ZH]
+"""
+audio_array = generate_audio(text_prompt, language='mix')
+```
+
+
+</details>
+
 ### API (TODO)
 
 Integrate VALL-E X into your projects with ease using our simple API. The API provides access to all of the model's fantastic functionalities, empowering you to build exciting applications with personalized speech synthesis capabilities.

@@ -95,7 +95,7 @@ def generate_audio(text, prompt=None, language='auto', accent='no-accent'):
     else:
         audio_prompts = torch.zeros([1, 0, NUM_QUANTIZERS]).type(torch.int32).to(device)
         text_prompts = torch.zeros([1, 0]).type(torch.int32)
-        lang_pr = lang
+        lang_pr = lang if lang != 'mix' else 'en'
 
     enroll_x_lens = text_prompts.shape[-1]
     logging.info(f"synthesize text: {text}")

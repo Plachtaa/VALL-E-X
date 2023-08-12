@@ -9,6 +9,7 @@ lang2token = {
     'zh': "[ZH]",
     'ja': "[JA]",
     "en": "[EN]",
+    'mix': "",
 }
 
 lang2code = {
