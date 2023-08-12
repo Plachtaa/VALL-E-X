@@ -3,6 +3,8 @@ torch
 torchaudio
 tokenizers
 encodec
+langid
+gdown
 unidecode
 pyopenjtalk
 pypinyin

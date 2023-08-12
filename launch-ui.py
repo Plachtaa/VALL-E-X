@@ -4,8 +4,13 @@ import os
 import pathlib
 import time
 import tempfile
-from pathlib import Path
-temp = pathlib.WindowsPath
+import platform
+if platform.system().lower() == 'windows':
+    temp = pathlib.PosixPath
+    pathlib.PosixPath = pathlib.WindowsPath
+elif platform.system().lower() == 'linux':
+    temp = pathlib.WindowsPath
+    pathlib.WindowsPath = pathlib.PosixPath
 os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 import torch
 import torchaudio
@@ -21,6 +26,7 @@ from data.collation import get_text_token_collater
 from models.vallex import VALLE
 from utils.g2p import PhonemeBpeTokenizer
 from descriptions import *
+from macros import *
 
 import gradio as gr
 import whisper
@@ -31,38 +37,6 @@ torch._C._jit_set_profiling_mode(False)
 torch._C._set_graph_executor_optimize(False)
 # torch.manual_seed(42)
 
-lang2token = {
-    'zh': "[ZH]",
-    'ja': "[JA]",
-    "en": "[EN]",
-}
-
-lang2code = {
-    'zh': 0,
-    'ja': 1,
-    "en": 2,
-}
-
-token2lang = {
-    '[ZH]': "zh",
-    '[JA]': "ja",
-    "[EN]": "en",
-    "": "mix"
-}
-
-code2lang = {
-    0: 'zh',
-    1: 'ja',
-    2: "en",
-}
-
-langdropdown2token = {
-    'English': "[EN]",
-    '中文': "[ZH]",
-    '日本語': "[JA]",
-    'Mix': "",
-}
-
 text_tokenizer = PhonemeBpeTokenizer(tokenizer_path="./utils/g2p/bpe_69.json")
 text_collater = get_text_token_collater()
 
@@ -72,17 +46,17 @@ if torch.cuda.is_available():
 
 # VALL-E-X model
 model = VALLE(
-    1024,
-    16,
-    12,
-    norm_first=True,
-    add_prenet=False,
-    prefix_mode=1,
-    share_embedding=True,
-    nar_scale_factor=1.0,
-    prepend_bos=True,
-    num_quantizers=8,
-)
+        N_DIM,
+        NUM_HEAD,
+        NUM_LAYERS,
+        norm_first=True,
+        add_prenet=False,
+        prefix_mode=PREFIX_MODE,
+        share_embedding=True,
+        nar_scale_factor=1.0,
+        prepend_bos=True,
+        num_quantizers=NUM_QUANTIZERS,
+    )
 checkpoint = torch.load("./vallex-checkpoint.pt", map_location='cpu')
 missing_keys, unexpected_keys = model.load_state_dict(
     checkpoint["model"], strict=True
