@@ -188,14 +188,14 @@ You can also leave the transcript blank to let the [Whisper](https://github.com/
 > VALL-E X tries to match the tone, pitch, emotion and prosody of a given preset. The model also attempts to preserve music, ambient noise, etc.
 
 ```python
-from utils.prompt_making import make_npz_prompt
+from utils.prompt_making import make_prompt
 
 ### Use given transcript
-make_npz_prompt(name="paimon", audio_prompt_path="paimon_prompt.wav",
+make_prompt(name="paimon", audio_prompt_path="paimon_prompt.wav",
                 transcript="Just, what was that? Paimon thought we were gonna get eaten.")
 
 ### Alternatively, use whisper
-make_npz_prompt(name="paimon", audio_prompt_path="paimon_prompt.wav")
+make_prompt(name="paimon", audio_prompt_path="paimon_prompt.wav")
 ```
 Now let's try out the prompt we've just made!
 ```python
@@ -218,6 +218,12 @@ write_wav("paimon_cloned.wav", SAMPLE_RATE, audio_array)
 # play text in notebook
 Audio(audio_array, rate=SAMPLE_RATE)
 ```
+
+[paimon_prompt.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/e7922859-9d12-4e2a-8651-e156e4280311)
+
+
+[paimon_cloned.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/60d3b7e9-5ead-4024-b499-a897ce5f3d5e)
+
 
 </details>
 
