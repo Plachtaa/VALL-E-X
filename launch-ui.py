@@ -137,7 +137,6 @@ def make_npz_prompt(name, uploaded_audio, recorded_audio):
 
 
 def make_prompt(name, wav, sr, save=True):
-
     global whisper_model
     whisper_model.to(device)
     if not isinstance(wav, torch.FloatTensor):

@@ -52,7 +52,7 @@ def transcribe_one(model, audio_path):
         text_pr += "."
     return lang, text_pr
 
-def make_npz_prompt(name, audio_prompt_path, transcript=None):
+def make_prompt(name, audio_prompt_path, transcript=None):
     global model, text_collater, text_tokenizer, codec
     wav_pr, sr = torchaudio.load(audio_prompt_path)
     # check length
@@ -60,7 +60,7 @@ def make_npz_prompt(name, audio_prompt_path, transcript=None):
         raise ValueError(f"Prompt too long, expect length below 15 seconds, got {wav_pr / sr} seconds.")
     if wav_pr.size(0) == 2:
         wav_pr = wav_pr.mean(0, keepdim=True)
-    text_pr, lang_pr = make_prompt(name, wav_pr, sr, transcript)
+    text_pr, lang_pr = make_transcript(name, wav_pr, sr, transcript)
 
     # tokenize audio
     encoded_frames = tokenize_audio(codec, (wav_pr, sr))
@@ -82,7 +82,7 @@ def make_npz_prompt(name, audio_prompt_path, transcript=None):
     logging.info(f"Successful. Prompt saved to {save_path}")
 
 
-def make_prompt(name, wav, sr, transcript=None):
+def make_transcript(name, wav, sr, transcript=None):
 
     if not isinstance(wav, torch.FloatTensor):
         wav = torch.tensor(wav)

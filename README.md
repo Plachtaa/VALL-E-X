@@ -185,17 +185,17 @@ audio_array = generate_audio(text_prompt, prompt="dingzhen")
 VALL-E X supports voice cloning! You can make a voice prompt with any person, character or even your own voice, and use it as all voice presets.<br>
 To make a voice prompt, you need to provide a speech of 3~10 seconds long, as well as the transcript of the speech. 
 You can also leave the transcript blank to let the [Whisper](https://github.com/openai/whisper) model to generate the transcript.
-> VALL-E X tries to match the tone, pitch, emotion and prosody of a given preset. The model also attempts to preserve music, ambient noise, etc.
+> VALL-E X tries to match the tone, pitch, emotion and prosody of a given prompt. The model also attempts to preserve music, ambient noise, etc.
 
 ```python
-from utils.prompt_making import make_prompt
+from utils.prompt_making import make_transcript
 
 ### Use given transcript
-make_prompt(name="paimon", audio_prompt_path="paimon_prompt.wav",
+make_transcript(name="paimon", audio_prompt_path="paimon_prompt.wav",
                 transcript="Just, what was that? Paimon thought we were gonna get eaten.")
 
 ### Alternatively, use whisper
-make_prompt(name="paimon", audio_prompt_path="paimon_prompt.wav")
+make_transcript(name="paimon", audio_prompt_path="paimon_prompt.wav")
 ```
 Now let's try out the prompt we've just made!
 ```python
