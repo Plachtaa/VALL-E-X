@@ -148,7 +148,6 @@ audio_array = generate_audio(text_prompt)
 
 [vallex_japanese.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/ee57a688-3e83-4be5-b0fe-019d16eec51c)
 
-  
 *Note: VALL-E X controls accent perfectly even when synthesizing code-switch text. However, you need to manually denote language of respective sentences (since our g2p tool is rule-base)*
 ```python
 text_prompt = """
@@ -159,7 +158,6 @@ audio_array = generate_audio(text_prompt, language='mix')
 ```
 
 [vallex_codeswitch.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/d8667abf-bd08-499f-a383-a861d852f98a)
-
 
 </details>
 
