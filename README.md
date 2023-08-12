@@ -175,11 +175,9 @@ I am an innocent boy with a smoky voice. It is a great honor for me to speak at 
 audio_array = generate_audio(text_prompt, prompt="dingzhen")
 ```
 
+[smoky.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/d3f55732-b1cd-420f-87d6-eab60db14dc5)
+
 </details>
-
-### API (TODO)
-
-Integrate VALL-E X into your projects with ease using our simple API. The API provides access to all of the model's fantastic functionalities, empowering you to build exciting applications with personalized speech synthesis capabilities.
 
 ### UI
 
