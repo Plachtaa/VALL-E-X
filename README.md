@@ -105,6 +105,9 @@ write_wav("vallex_generation.wav", SAMPLE_RATE, audio_array)
 # play text in notebook
 Audio(audio_array, rate=SAMPLE_RATE)
 ```
+
+[hamburger.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/578d7bbe-cda9-483e-898c-29646edc8f2e)
+
 </details>
 ### API (TODO)
 
