@@ -228,9 +228,16 @@ Audio(audio_array, rate=SAMPLE_RATE)
 </details>
 
 
-### UI
+<details open>
+<summary><h3>🎢User Interface</h3></summary>
 
 Not comfortable with codes? No problem! We've also created a user-friendly graphical interface for VALL-E X. It allows you to interact with the model effortlessly, making voice cloning and multilingual speech synthesis a breeze.
+<br>
+You can launch the UI by the following command:
+```commandline
+python launch-ui.py
+```
+</details>
 
 ## 🙌 Contribute
 
