@@ -161,6 +161,22 @@ audio_array = generate_audio(text_prompt, language='mix')
 
 </details>
 
+<details open>
+<summary><h3>📼 Voice Presets</h3></summary>
+  
+VALL-E X provides tens of speaker voices which you can directly used for inference! Browse all voices in the [code](/presets)
+
+> VALL-E X tries to match the tone, pitch, emotion and prosody of a given preset, and supports free & open custom voice cloning. The model also attempts to preserve music, ambient noise, etc.
+
+```python
+text_prompt = """
+I am an innocent boy with a smoky voice. It is a great honor for me to speak at the United Nations today.
+"""
+audio_array = generate_audio(text_prompt, prompt="dingzhen")
+```
+
+</details>
+
 ### API (TODO)
 
 Integrate VALL-E X into your projects with ease using our simple API. The API provides access to all of the model's fantastic functionalities, empowering you to build exciting applications with personalized speech synthesis capabilities.

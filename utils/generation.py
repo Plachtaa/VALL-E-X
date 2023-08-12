@@ -83,6 +83,10 @@ def generate_audio(text, prompt=None, language='auto', accent='no-accent'):
 
     # load prompt
     if prompt is not None:
+        if not os.path.exists(prompt):
+            prompt = "./presets/" + prompt + ".npz"
+        if not os.path.exists(prompt):
+            raise ValueError(f"Cannot find prompt {prompt}")
         prompt_data = np.load(prompt)
         audio_prompts = prompt_data['audio_tokens']
         text_prompts = prompt_data['text_tokens']
