@@ -7,7 +7,9 @@ An open source implementation of Microsoft's [VALL-E X](https://arxiv.org/pdf/23
 ## ⭐️ Welcome to VALL-E X! ⭐️
 
 VALL-E X is an amazing multilingual text-to-speech (TTS) model inspired by Microsoft's groundbreaking research. While Microsoft initially proposed the concept in their research paper, they did not release any code or pretrained models. Recognizing the potential and value of this technology, our team took on the challenge to reproduce the results and train our own model. We are excited to share our trained VALL-E X model with the community, allowing everyone to experience the power of personalized speech synthesis and voice cloning! 🎧
-
+<br>
+<br>
+More details about the model are presented in [model card](./model-card.md).
 ## 💻 Installation
 ### Install with pip
 ```commandline
@@ -30,8 +32,6 @@ Not ready to set up the environment on your local machine just yet? No problem! 
 VALL-E X comes packed with cutting-edge functionalities:
 
 1. **Multilingual TTS**: Speak in three languages - English, Chinese, and Japanese - with natural and expressive speech synthesis.
-
-[multilingual-tts.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/11b5a789-45ad-4e22-9450-acbe80a3a9d7)
 
 2. **Zero-shot Voice Cloning**: Enroll a short 3~10 seconds recording of an unseen speaker, and watch VALL-E X create personalized, high-quality speech that sounds just like them!
 
