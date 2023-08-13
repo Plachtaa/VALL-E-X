@@ -1,8 +1,5 @@
 top_md = """
 # VALL-E X  
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1yyD_sz531QntLKowMHo-XxorsFBCfKul?usp=sharing)
-[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Plachtaa/vallex-webui)
-Unofficial implementation of Microsoft's [VALL-E X](https://arxiv.org/pdf/2303.03926).<br>
 VALL-E X can synthesize high-quality personalized speech with only a 3-second enrolled recording of 
 an unseen speaker as an acoustic prompt, even in another language for a monolingual speaker.<br>
 This implementation supports zero-shot, mono-lingual/cross-lingual text-to-speech functionality of three languages (English, Chinese, Japanese)<br>  
