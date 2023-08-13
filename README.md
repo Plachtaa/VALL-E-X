@@ -279,11 +279,6 @@ Comparing to [Bark](https://github.com/suno-ai/bark):
 
 #### MORE TO BE ADDED...
 
-
-## 🙌 Contribute
-
-We welcome contributions from the community to make VALL-E X even better! If you have ideas, bug fixes, or want to add more languages, emotions, or accents to the model, feel free to submit a pull request. Together, we can take VALL-E X to new heights!
-
 ## ⭐️ Show Your Support
 
 If you find VALL-E X interesting and useful, give us a star on GitHub! ⭐️ It encourages us to keep improving the model and adding exciting features.
@@ -294,8 +289,6 @@ VALL-E X is licensed under the [MIT License](./LICENSE).
 
 ---
 
-Let your imagination run wild with VALL-E X, and enjoy the fantastic world of multilingual text-to-speech synthesis and voice cloning! 🌈 🎶
-
-Have questions or need assistance? Feel free to open an issue or join our community (not set yet lol)
+Have questions or need assistance? Feel free to [open an issue](https://github.com/Plachtaa/VALL-E-X/issues/new) or join our [Discord](https://discord.gg/qCBRmAnTxg)
 
 Happy voice cloning! 🎤
