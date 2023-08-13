@@ -284,6 +284,7 @@ Comparing to [Bark](https://github.com/suno-ai/bark):
 
 ## 🧠 TODO
 - [ ] Add Chinese README
+- [ ] `.bat` scripts for non-python users
 - [ ] Long text generation
 - [ ] Fine-tuning for better voice adaptation
 - [ ] To be added...
