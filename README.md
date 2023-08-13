@@ -258,7 +258,7 @@ Comparing to [Bark](https://github.com/suno-ai/bark):
 - ✔ **Light-weighted**: 3️⃣ ✖ smaller,
 - ✔ **Efficient**: 4️⃣ ✖ faster, 
 - ✔ **Better quality on Chinese & Japanese**
-- ✔ **Cross-lingual speech with foreign accent**
+- ✔ **Cross-lingual speech without foreign accent**
 - ✔ **Easy voice-cloning**
 - ❌ **Less languages**
 - ❌ **No special tokens for music / sound effects**
