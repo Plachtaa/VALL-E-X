@@ -20,6 +20,7 @@ More details about the model are presented in [model card](./model-card.md).
 * [🎧 Demos](#-demos)
 * [🐍 Usage](#-usage-in-python)
 * [❓ FAQ](#-faq)
+* [🧠 TODO](#-todo)
 
 ## 🚀 Updates
 
@@ -280,6 +281,16 @@ Comparing to [Bark](https://github.com/suno-ai/bark):
 * 6GB GPU VRAM - Almost all NVIDIA GPUs satisfy the requirement.
 
 #### MORE TO BE ADDED...
+
+## 🧠 TODO
+- [] Long text generation
+- [] Fine-tuning for better voice adaptation
+- [] To be added...
+
+## 🙏 Appreciation
+- [VALL-E X paper](https://arxiv.org/pdf/2303.03926) for the brilliant idea
+- [lifeiteng's vall-e](https://github.com/lifeiteng/vall-e) for related training code
+- [bark](https://github.com/suno-ai/bark) for the amazing pioneering work in neuro-codec TTS model
 
 ## ⭐️ Show Your Support
 
