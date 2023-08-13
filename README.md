@@ -283,6 +283,7 @@ Comparing to [Bark](https://github.com/suno-ai/bark):
 #### MORE TO BE ADDED...
 
 ## 🧠 TODO
+- [ ] Add Chinese README
 - [ ] Long text generation
 - [ ] Fine-tuning for better voice adaptation
 - [ ] To be added...
