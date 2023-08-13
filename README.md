@@ -283,9 +283,9 @@ Comparing to [Bark](https://github.com/suno-ai/bark):
 #### MORE TO BE ADDED...
 
 ## 🧠 TODO
-- [] Long text generation
-- [] Fine-tuning for better voice adaptation
-- [] To be added...
+- [ ] Long text generation
+- [ ] Fine-tuning for better voice adaptation
+- [ ] To be added...
 
 ## 🙏 Appreciation
 - [VALL-E X paper](https://arxiv.org/pdf/2303.03926) for the brilliant idea
