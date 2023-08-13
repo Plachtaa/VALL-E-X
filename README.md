@@ -1,6 +1,6 @@
 # VALL-E X: Multilingual Text-to-Speech Synthesis and Voice Cloning 🔊
 An open source implementation of Microsoft's [VALL-E X](https://arxiv.org/pdf/2303.03926) zero-shot TTS model.<br>
-**Trained model will be released after this repository is fully ready.**
+**We release our trained model to the public for research or application usage.**
 
 ![vallex-framework](/images/vallex_framework.jpg "VALL-E X framework")
 
@@ -10,6 +10,20 @@ VALL-E X is an amazing multilingual text-to-speech (TTS) model inspired by Micro
 <br>
 <br>
 More details about the model are presented in [model card](./model-card.md).
+
+## 📖 Quick Index
+* [🚀 Updates](#-updates)
+* [📢 Features](#-features)
+* [💻 Installation](#-installation)
+* [🎧 Demos](#-demos)
+* [🐍 Usage](#-usage-in-python)
+* [❓ FAQ](#-faq)
+
+## 🚀 Updates
+
+**2023.08.14**
+- Pretrained VALL-E X checkpoint is now released. Download it [here](https://drive.google.com/file/d/10gdQWvP-K_e1undkvv0p2b7SU6I4Egyl/view?usp=sharing)
+
 ## 💻 Installation
 ### Install with pip
 ```commandline
@@ -199,24 +213,13 @@ make_prompt(name="paimon", audio_prompt_path="paimon_prompt.wav")
 ```
 Now let's try out the prompt we've just made!
 ```python
-from utils.generation import SAMPLE_RATE, generate_audio, preload_models
-from scipy.io.wavfile import write as write_wav
-from IPython.display import Audio
-
-# download and load all models
-preload_models()
-
-# generate audio from text
 text_prompt = """
 Hey, Traveler, Listen to this, This machine has taken my voice, and now it can talk just like me!
 """
 audio_array = generate_audio(text_prompt, prompt="paimon")
 
-# save audio to disk
 write_wav("paimon_cloned.wav", SAMPLE_RATE, audio_array)
 
-# play text in notebook
-Audio(audio_array, rate=SAMPLE_RATE)
 ```
 
 [paimon_prompt.webm](https://github.com/Plachtaa/VALL-E-X/assets/112609742/e7922859-9d12-4e2a-8651-e156e4280311)
@@ -238,6 +241,44 @@ You can launch the UI by the following command:
 python launch-ui.py
 ```
 </details>
+
+## 🛠️ Hardware and Inference Speed
+
+VALL-E X works well on both CPU and GPU (`pytorch 2.0+`, CUDA 11.7 and CUDA 12.0).
+
+A GPU VRAM of 6GB is enough for running VALL-E X without offloading.
+
+## ⚙️ Details
+
+VALL-E X is similar to [Bark](https://github.com/suno-ai/bark), [VALL-E](https://arxiv.org/abs/2301.02111) and [AudioLM](https://arxiv.org/abs/2209.03143), which generates audio in GPT-style by predicting audio tokens quantized by [EnCodec](https://github.com/facebookresearch/encodec).
+<br>
+Comparing to [Bark](https://github.com/suno-ai/bark):
+- ✔ **Light-weighted**: 3️⃣ ✖ smaller,
+- ✔ **Efficient**: 4️⃣✖ faster, 
+- ✔ **Better quality on Chinese & Japanese**
+- ✔ **Cross-lingual speech with foreign accent**
+- ✔ **Easy voice-cloning**
+- ❌ **Less languages**
+- ❌ **No special tokens for music / sound effects**
+
+### Supported Languages
+
+| Language | Status |
+| --- | :---: |
+| English (en) | ✅ |
+| Japanese (ja) | ✅ |
+| Chinese, simplified (zh) | ✅ |
+
+## ❓ FAQ
+
+#### Where can I download the model checkpoint?
+* We use `gdown` to download the model to directory `./checkpoints/` when you run `preload_models()` for the first time.
+
+#### How much VRAM do I need?
+* 6GB GPU VRAM - Almost all NVIDIA GPUs satisfy the requirement.
+
+#### MORE TO BE ADDED...
+
 
 ## 🙌 Contribute
 
