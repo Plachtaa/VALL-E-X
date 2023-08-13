@@ -256,7 +256,7 @@ VALL-E X is similar to [Bark](https://github.com/suno-ai/bark), [VALL-E](https:/
 <br>
 Comparing to [Bark](https://github.com/suno-ai/bark):
 - ✔ **Light-weighted**: 3️⃣ ✖ smaller,
-- ✔ **Efficient**: 4️⃣✖ faster, 
+- ✔ **Efficient**: 4️⃣ ✖ faster, 
 - ✔ **Better quality on Chinese & Japanese**
 - ✔ **Cross-lingual speech with foreign accent**
 - ✔ **Easy voice-cloning**
