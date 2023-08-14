@@ -30,7 +30,7 @@ More details about the model are presented in [model card](./model-card.md).
 ## 💻 Installation
 ### Install with pip
 ```commandline
-https://github.com/Plachtaa/VALL-E-X.git
+git clone https://github.com/Plachtaa/VALL-E-X.git
 cd VALL-E-X
 pip install --no-error-on-external -r requirements.txt
 ```
