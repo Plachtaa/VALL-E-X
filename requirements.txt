@@ -1,3 +1,4 @@
+soundfile
 numpy
 torch
 torchaudio
