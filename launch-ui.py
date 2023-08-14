@@ -44,6 +44,10 @@ if torch.cuda.is_available():
     device = torch.device("cuda", 0)
 
 # VALL-E-X model
+if not os.path.exists("./checkpoints/"): os.mkdir("./checkpoints/")
+if not os.path.exists(os.path.join("./checkpoints/", "vallex-checkpoint.pt")):
+    import gdown
+    gdown.download(id="10gdQWvP-K_e1undkvv0p2b7SU6I4Egyl", output=os.path.join("./checkpoints/", "vallex-checkpoint.pt"), quiet=False)
 model = VALLE(
         N_DIM,
         NUM_HEAD,
@@ -56,7 +60,7 @@ model = VALLE(
         prepend_bos=True,
         num_quantizers=NUM_QUANTIZERS,
     )
-checkpoint = torch.load("./vallex-checkpoint.pt", map_location='cpu')
+checkpoint = torch.load("./checkpoints/vallex-checkpoint.pt", map_location='cpu')
 missing_keys, unexpected_keys = model.load_state_dict(
     checkpoint["model"], strict=True
 )
