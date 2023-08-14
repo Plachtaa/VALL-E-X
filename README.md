@@ -280,6 +280,12 @@ Comparing to [Bark](https://github.com/suno-ai/bark):
 #### How much VRAM do I need?
 * 6GB GPU VRAM - Almost all NVIDIA GPUs satisfy the requirement.
 
+#### Why the model fails to generate long text?
+* Transformer's computation complexity increases quadratically while the sequence length increases. Hence, all training 
+are kept under 22 seconds. Please make sure the total length of audio prompt and generated audio is less than 22 seconds 
+to ensure acceptable performance. 
+* To generate long text, a huge paragraph must be breakdown into short sentences. We are currently working on this.
+
 #### MORE TO BE ADDED...
 
 ## 🧠 TODO
@@ -287,6 +293,7 @@ Comparing to [Bark](https://github.com/suno-ai/bark):
 - [ ] `.bat` scripts for non-python users
 - [ ] Long text generation
 - [ ] Fine-tuning for better voice adaptation
+- [ ] Replace Encodec decoder with Vocos decoder
 - [ ] To be added...
 
 ## 🙏 Appreciation
