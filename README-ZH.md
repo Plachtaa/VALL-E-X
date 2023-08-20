@@ -21,6 +21,8 @@ VALL-E X 是一个强大而创新的多语言文本转语音（TTS）模型，�
 * [🧠 TODO](#-todo)
 
 ## 🚀 Updates
+**2023.08.20**
+- 加入了中文版README
 
 **2023.08.14**
 - 预训练模型权重已发布，从[这里](https://drive.google.com/file/d/10gdQWvP-K_e1undkvv0p2b7SU6I4Egyl/view?usp=sharing)下载。

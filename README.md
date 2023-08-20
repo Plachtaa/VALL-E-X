@@ -23,6 +23,8 @@ More details about the model are presented in [model card](./model-card.md).
 * [🧠 TODO](#-todo)
 
 ## 🚀 Updates
+**2023.08.20**
+- Added [Chinese README](README-ZH.md).
 
 **2023.08.14**
 - Pretrained VALL-E X checkpoint is now released. Download it [here](https://drive.google.com/file/d/10gdQWvP-K_e1undkvv0p2b7SU6I4Egyl/view?usp=sharing)
