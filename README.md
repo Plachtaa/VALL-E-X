@@ -8,7 +8,7 @@ An open source implementation of Microsoft's [VALL-E X](https://arxiv.org/pdf/23
 
 ![vallex-framework](/images/vallex_framework.jpg "VALL-E X framework")
 
-VALL-E X is an amazing multilingual text-to-speech (TTS) model inspired by Microsoft's groundbreaking research. While Microsoft initially proposed the concept in their research paper, they did not release any code or pretrained models. Recognizing the potential and value of this technology, our team took on the challenge to reproduce the results and train our own model. We are excited to share our trained VALL-E X model with the community, allowing everyone to experience the power of personalized speech synthesis and voice cloning! 🎧
+VALL-E X is an amazing multilingual text-to-speech (TTS) model proposed by Microsoft. While Microsoft initially publish in their research paper, they did not release any code or pretrained models. Recognizing the potential and value of this technology, our team took on the challenge to reproduce the results and train our own model. We are glad to share our trained VALL-E X model with the community, allowing everyone to experience the power next-generation TTS! 🎧
 <br>
 <br>
 More details about the model are presented in [model card](./model-card.md).
