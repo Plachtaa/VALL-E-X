@@ -8,7 +8,8 @@
 ![vallex-framework](/images/vallex_framework.jpg "VALL-E X framework")
 
 VALL-E X 是一个强大而创新的多语言文本转语音（TTS）模型，最初由微软发布。虽然微软最初在他们的研究论文中提出了该概念，但并未发布任何代码或预训练模型。我们认识到了这项技术的潜力和价值，复现并训练了一个开源可用的VALL-E X模型。我们很乐意与社区分享我们的预训练模型，让每个人都能体验到次世代TTS的威力。 🎧
-More details about the model are presented in [model card](./model-card.md).
+<br>
+更多细节请查看 [model card](./model-card.md).
 
 ## 📖 目录
 * [🚀 更新日志](#-更新日志)
