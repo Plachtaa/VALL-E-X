@@ -1,5 +1,6 @@
 # VALL-E X: 多语言文本到语音合成与语音克隆 🔊
 [![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/qCBRmAnTxg)
+<br>
 [English](README.md) | 中文
 <br>
 微软[VALL-E X](https://arxiv.org/pdf/2303.03926) 零样本语音合成模型的开源实现.<br>

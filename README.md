@@ -1,6 +1,7 @@
 # VALL-E X: Multilingual Text-to-Speech Synthesis and Voice Cloning 🔊
 [![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/qCBRmAnTxg)
-English) | [中文](README_ZH.md)
+<br>
+English | [中文](README_ZH.md)
 <br>
 An open source implementation of Microsoft's [VALL-E X](https://arxiv.org/pdf/2303.03926) zero-shot TTS model.<br>
 **We release our trained model to the public for research or application usage.**
