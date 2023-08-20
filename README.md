@@ -28,7 +28,7 @@ More details about the model are presented in [model card](./model-card.md).
 - Pretrained VALL-E X checkpoint is now released. Download it [here](https://drive.google.com/file/d/10gdQWvP-K_e1undkvv0p2b7SU6I4Egyl/view?usp=sharing)
 
 ## 💻 Installation
-### Install with pip
+### Install with pip, recommended with Python 3.10, CUDA 11.7 ~ 12.0, PyTorch 2.0+
 ```commandline
 git clone https://github.com/Plachtaa/VALL-E-X.git
 cd VALL-E-X
