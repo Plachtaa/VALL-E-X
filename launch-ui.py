@@ -318,7 +318,7 @@ def main():
 
                     textbox = gr.TextArea(label="Text",
                                           placeholder="Type your sentence here",
-                                          value="VALLEX can synthesize personalized speech in another language for a monolingual speaker.", elem_id=f"tts-input")
+                                          value="Welcome back, Master. What can I do for you today?", elem_id=f"tts-input")
                     language_dropdown = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語'], value='English', label='auto-detect')
                     accent_dropdown = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'], value='no-accent', label='accent')
                     upload_audio_prompt = gr.Audio(label='uploaded audio prompt', source='upload', interactive=True)
@@ -364,7 +364,7 @@ def main():
                 with gr.Column():
                     textbox_3 = gr.TextArea(label="Text",
                                           placeholder="Type your sentence here",
-                                          value="VALLEX can synthesize personalized speech in another language for a monolingual speaker.", elem_id=f"tts-input")
+                                          value="Welcome back, Master. What can I do for you today?", elem_id=f"tts-input")
                     language_dropdown_3 = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語', 'Mix'], value='auto-detect',
                                                     label='language')
                     accent_dropdown_3 = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'], value='no-accent',
