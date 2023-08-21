@@ -1,7 +1,11 @@
+--extra-index-url https://download.pytorch.org/whl/cu118
+
 soundfile
 numpy
-torch
-torchaudio
+torch==2.0.1+cu118; sys_platform != 'darwin'
+torch==2.0.1; sys_platform == 'darwin'
+torchvision==0.15.2+cu118; sys_platform != 'darwin'
+torchvision==0.15.2; sys_platform == 'darwin'
 tokenizers
 encodec
 langid
@@ -15,3 +19,6 @@ jieba
 eng_to_ipa
 jieba
 openai-whisper
+phonemizer
+matplotlib
+gradio
