@@ -120,7 +120,6 @@ def transcribe_one(model, audio_path):
         text_pr += "."
     return lang, text_pr
 
-#  输入的语音台本和语言参数
 def make_npz_prompt(name, uploaded_audio, recorded_audio, transcript_content):
     global model, text_collater, text_tokenizer, audio_tokenizer
     clear_prompts()
