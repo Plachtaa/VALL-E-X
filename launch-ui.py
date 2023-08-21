@@ -12,6 +12,10 @@ elif platform.system().lower() == 'linux':
     temp = pathlib.WindowsPath
     pathlib.WindowsPath = pathlib.PosixPath
 os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
+
+import langid
+langid.set_languages(['en', 'zh', 'ja'])
+
 import torch
 import torchaudio
 import random
@@ -30,8 +34,14 @@ from macros import *
 
 import gradio as gr
 import whisper
-torch.set_num_threads(1)
-torch.set_num_interop_threads(1)
+import multiprocessing
+
+thread_count = multiprocessing.cpu_count()
+
+print("Use",thread_count,"cpu cores for computing")
+
+torch.set_num_threads(thread_count)
+torch.set_num_interop_threads(thread_count)
 torch._C._jit_set_profiling_executor(False)
 torch._C._jit_set_profiling_mode(False)
 torch._C._set_graph_executor_optimize(False)
@@ -110,18 +120,30 @@ def transcribe_one(model, audio_path):
         text_pr += "."
     return lang, text_pr
 
-def make_npz_prompt(name, uploaded_audio, recorded_audio):
+#  输入的语音台本和语言参数
+def make_npz_prompt(name, uploaded_audio, recorded_audio, transcript_content):
     global model, text_collater, text_tokenizer, audio_tokenizer
     clear_prompts()
     audio_prompt = uploaded_audio if uploaded_audio is not None else recorded_audio
     sr, wav_pr = audio_prompt
-    wav_pr = torch.FloatTensor(wav_pr) / 32768
+    if not isinstance(wav_pr, torch.FloatTensor):
+        wav_pr = torch.FloatTensor(wav_pr)
+    if wav_pr.abs().max() > 1:
+        wav_pr /= wav_pr.abs().max()
     if wav_pr.size(-1) == 2:
         wav_pr = wav_pr.mean(-1, keepdim=False)
-    text_pr, lang_pr = make_prompt(name, wav_pr, sr, save=False)
+    if wav_pr.ndim == 1:
+        wav_pr = wav_pr.unsqueeze(0)
+    assert wav_pr.ndim and wav_pr.size(0) == 1
 
+    if transcript_content == "":
+        text_pr, lang_pr = make_prompt(name, wav_pr, sr, save=False)
+    else:
+        lang_pr = langid.classify(str(transcript_content))[0]
+        lang_token = lang2token[lang_pr]
+        text_pr = f"{lang_token}{str(transcript_content)}{lang_token}"
     # tokenize audio
-    encoded_frames = tokenize_audio(audio_tokenizer, (wav_pr.unsqueeze(0), sr))
+    encoded_frames = tokenize_audio(audio_tokenizer, (wav_pr, sr))
     audio_tokens = encoded_frames[0][0].transpose(2, 1).cpu().numpy()
 
     # tokenize text
@@ -176,7 +198,10 @@ def infer_from_audio(text, language, accent, audio_prompt, record_audio_prompt):
     if wav_pr.size(-1) == 2:
         wav_pr = wav_pr.mean(-1, keepdim=False)
     text_pr, lang_pr = make_prompt(str(random.randint(0, 10000000)), wav_pr, sr, save=False)
-    lang_token = langdropdown2token[language]
+    if language == 'auto-detect':
+        lang_token = lang2token[langid.classify(text)[0]]
+    else:
+        lang_token = langdropdown2token[language]
     lang = token2lang[lang_token]
     text = lang_token + text + lang_token
 
@@ -233,7 +258,10 @@ def infer_from_prompt(text, language, accent, prompt_file):
     clear_prompts()
     model.to(device)
     # text to synthesize
-    lang_token = langdropdown2token[language]
+    if language == 'auto-detect':
+        lang_token = lang2token[langid.classify(text)[0]]
+    else:
+        lang_token = langdropdown2token[language]
     lang = token2lang[lang_token]
     text = lang_token + text + lang_token
 
@@ -292,7 +320,7 @@ def main():
                     textbox = gr.TextArea(label="Text",
                                           placeholder="Type your sentence here",
                                           value="VALLEX can synthesize personalized speech in another language for a monolingual speaker.", elem_id=f"tts-input")
-                    language_dropdown = gr.Dropdown(choices=['English', '中文', '日本語'], value='English', label='language')
+                    language_dropdown = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語'], value='English', label='auto-detect')
                     accent_dropdown = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'], value='no-accent', label='accent')
                     upload_audio_prompt = gr.Audio(label='uploaded audio prompt', source='upload', interactive=True)
                     record_audio_prompt = gr.Audio(label='recorded audio prompt', source='microphone', interactive=True)
@@ -318,6 +346,10 @@ def main():
                     textbox2 = gr.TextArea(label="Prompt name",
                                           placeholder="Name your prompt here",
                                           value="prompt_1", elem_id=f"prompt-name")
+                    # 添加选择语言和输入台本的地方
+                    textbox_transcript = gr.TextArea(label="Transcript",
+                                          placeholder="Write transcript here. (leave empty to use whisper)",
+                                          value="", elem_id=f"prompt-name")
                     upload_audio_prompt_2 = gr.Audio(label='uploaded audio prompt', source='upload', interactive=True)
                     record_audio_prompt_2 = gr.Audio(label='recorded audio prompt', source='microphone', interactive=True)
                 with gr.Column():
@@ -325,7 +357,7 @@ def main():
                     prompt_output_2 = gr.File(interactive=False)
                     btn_2 = gr.Button("Make!")
                     btn_2.click(make_npz_prompt,
-                              inputs=[textbox2, upload_audio_prompt_2, record_audio_prompt_2],
+                              inputs=[textbox2, upload_audio_prompt_2, record_audio_prompt_2, textbox_transcript],
                               outputs=[text_output_2, prompt_output_2])
         with gr.Tab("Infer from prompt"):
             gr.Markdown(infer_from_prompt_md)
@@ -334,7 +366,7 @@ def main():
                     textbox_3 = gr.TextArea(label="Text",
                                           placeholder="Type your sentence here",
                                           value="VALLEX can synthesize personalized speech in another language for a monolingual speaker.", elem_id=f"tts-input")
-                    language_dropdown_3 = gr.Dropdown(choices=['English', '中文', '日本語', 'Mix'], value='English',
+                    language_dropdown_3 = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語', 'Mix'], value='auto-detect',
                                                     label='language')
                     accent_dropdown_3 = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'], value='no-accent',
                                                   label='accent')
