@@ -33,7 +33,7 @@ url = 'https://drive.google.com/file/d/10gdQWvP-K_e1undkvv0p2b7SU6I4Egyl/view?us
 
 checkpoints_dir = "./checkpoints/"
 
-model_checkpoint_name = "checkpoint.pt"
+model_checkpoint_name = "vallex-checkpoint.pt"
 
 model = None
 
