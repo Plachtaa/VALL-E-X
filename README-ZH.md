@@ -287,7 +287,7 @@ to ensure acceptable performance.
 ## 🧠 TODO
 - [x] Add Chinese README
 - [ ] `.bat` scripts for non-python users
-- [ ] Long text generation
+- [x] Long text generation
 - [ ] Fine-tuning for better voice adaptation
 - [ ] Replace Encodec decoder with Vocos decoder
 - [ ] To be added...
