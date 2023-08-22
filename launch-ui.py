@@ -83,6 +83,10 @@ audio_tokenizer = AudioTokenizer(device)
 # ASR
 whisper_model = whisper.load_model("medium").cpu()
 
+# Voice Presets
+preset_list = os.walk("./presets/").__next__()[2]
+preset_list = [preset[:-4] for preset in preset_list if preset.endswith(".npz")]
+
 def clear_prompts():
     try:
         path = tempfile.gettempdir()
@@ -267,7 +271,7 @@ def infer_from_audio(text, language, accent, audio_prompt, record_audio_prompt, 
     return message, (24000, samples[0][0].cpu().numpy())
 
 @torch.no_grad()
-def infer_from_prompt(text, language, accent, prompt_file):
+def infer_from_prompt(text, language, accent, preset_prompt, prompt_file):
     clear_prompts()
     model.to(device)
     # text to synthesize
@@ -279,7 +283,10 @@ def infer_from_prompt(text, language, accent, prompt_file):
     text = lang_token + text + lang_token
 
     # load prompt
-    prompt_data = np.load(prompt_file.name)
+    if prompt_file is not None:
+        prompt_data = np.load(prompt_file.name)
+    else:
+        prompt_data = np.load(os.path.join("./presets/", f"{preset_prompt}.npz"))
     audio_prompts = prompt_data['audio_tokens']
     text_prompts = prompt_data['text_tokens']
     lang_pr = prompt_data['lang_code']
@@ -323,7 +330,7 @@ def infer_from_prompt(text, language, accent, prompt_file):
 
 from utils.sentence_cutter import split_text_into_sentences
 @torch.no_grad()
-def infer_long_text(text, prompt=None, language='auto', accent='no-accent'):
+def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='no-accent'):
     """
     For long audio generation, two modes are available.
     fixed-prompt: This mode will keep using the same prompt the user has provided, and generate audio sentence by sentence.
@@ -332,7 +339,7 @@ def infer_long_text(text, prompt=None, language='auto', accent='no-accent'):
     mode = 'fixed-prompt'
     global model, audio_tokenizer, text_tokenizer, text_collater
     model.to(device)
-    if prompt is None or prompt == "":
+    if (prompt is None or prompt == "") and preset_prompt == "":
         mode = 'sliding-window'  # If no prompt is given, use sliding-window mode
     sentences = split_text_into_sentences(text)
     # detect language
@@ -345,6 +352,16 @@ def infer_long_text(text, prompt=None, language='auto', accent='no-accent'):
     if prompt is not None and prompt != "":
         # load prompt
         prompt_data = np.load(prompt.name)
+        audio_prompts = prompt_data['audio_tokens']
+        text_prompts = prompt_data['text_tokens']
+        lang_pr = prompt_data['lang_code']
+        lang_pr = code2lang[int(lang_pr)]
+
+        # numpy to tensor
+        audio_prompts = torch.tensor(audio_prompts).type(torch.int32).to(device)
+        text_prompts = torch.tensor(text_prompts).type(torch.int32)
+    elif preset_prompt is not None and preset_prompt != "":
+        prompt_data = np.load(os.path.join("./presets/", f"{preset_prompt}.npz"))
         audio_prompts = prompt_data['audio_tokens']
         text_prompts = prompt_data['text_tokens']
         lang_pr = prompt_data['lang_code']
@@ -512,13 +529,14 @@ def main():
                                                     label='language')
                     accent_dropdown_3 = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'], value='no-accent',
                                                   label='accent')
+                    preset_dropdown_3 = gr.Dropdown(choices=preset_list, value=None, label='Voice preset')
                     prompt_file = gr.File(file_count='single', file_types=['.npz'], interactive=True)
                 with gr.Column():
                     text_output_3 = gr.Textbox(label="Message")
                     audio_output_3 = gr.Audio(label="Output Audio", elem_id="tts-audio")
                     btn_3 = gr.Button("Generate!")
                     btn_3.click(infer_from_prompt,
-                              inputs=[textbox_3, language_dropdown_3, accent_dropdown_3, prompt_file],
+                              inputs=[textbox_3, language_dropdown_3, accent_dropdown_3, preset_dropdown_3, prompt_file],
                               outputs=[text_output_3, audio_output_3])
         with gr.Tab("Infer long text"):
             gr.Markdown("This is a long text generation demo. You can use this to generate long audio. ")
@@ -531,13 +549,14 @@ def main():
                                                     label='language')
                     accent_dropdown_4 = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'], value='no-accent',
                                                     label='accent')
+                    preset_dropdown_4 = gr.Dropdown(choices=preset_list, value=None, label='Voice preset')
                     prompt_file_4 = gr.File(file_count='single', file_types=['.npz'], interactive=True)
                 with gr.Column():
                     text_output_4 = gr.TextArea(label="Message")
                     audio_output_4 = gr.Audio(label="Output Audio", elem_id="tts-audio")
                     btn_4 = gr.Button("Generate!")
                     btn_4.click(infer_long_text,
-                              inputs=[textbox_4, prompt_file_4, language_dropdown_4, accent_dropdown_4],
+                              inputs=[textbox_4, preset_dropdown_4, prompt_file_4, language_dropdown_4, accent_dropdown_4],
                               outputs=[text_output_4, audio_output_4])
 
     app.launch()
