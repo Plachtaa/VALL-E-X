@@ -188,15 +188,29 @@ def make_prompt(name, wav, sr, save=True):
     return text, lang
 
 @torch.no_grad()
-def infer_from_audio(text, language, accent, audio_prompt, record_audio_prompt):
+def infer_from_audio(text, language, accent, audio_prompt, record_audio_prompt, transcript_content):
     global model, text_collater, text_tokenizer, audio_tokenizer
     model.to(device)
     audio_prompt = audio_prompt if audio_prompt is not None else record_audio_prompt
     sr, wav_pr = audio_prompt
-    wav_pr = torch.FloatTensor(wav_pr)/32768
+    sr, wav_pr = audio_prompt
+    if not isinstance(wav_pr, torch.FloatTensor):
+        wav_pr = torch.FloatTensor(wav_pr)
+    if wav_pr.abs().max() > 1:
+        wav_pr /= wav_pr.abs().max()
     if wav_pr.size(-1) == 2:
         wav_pr = wav_pr.mean(-1, keepdim=False)
-    text_pr, lang_pr = make_prompt(str(random.randint(0, 10000000)), wav_pr, sr, save=False)
+    if wav_pr.ndim == 1:
+        wav_pr = wav_pr.unsqueeze(0)
+    assert wav_pr.ndim and wav_pr.size(0) == 1
+
+    if transcript_content == "":
+        text_pr, lang_pr = make_prompt('dummy', wav_pr, sr, save=False)
+    else:
+        lang_pr = langid.classify(str(transcript_content))[0]
+        lang_token = lang2token[lang_pr]
+        text_pr = f"{lang_token}{str(transcript_content)}{lang_token}"
+
     if language == 'auto-detect':
         lang_token = lang2token[langid.classify(text)[0]]
     else:
@@ -208,7 +222,7 @@ def infer_from_audio(text, language, accent, audio_prompt, record_audio_prompt):
     model.to(device)
 
     # tokenize audio
-    encoded_frames = tokenize_audio(audio_tokenizer, (wav_pr.unsqueeze(0), sr))
+    encoded_frames = tokenize_audio(audio_tokenizer, (wav_pr, sr))
     audio_prompts = encoded_frames[0][0].transpose(2, 1).to(device)
 
     # tokenize text
@@ -321,6 +335,9 @@ def main():
                                           value="Welcome back, Master. What can I do for you today?", elem_id=f"tts-input")
                     language_dropdown = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語'], value='English', label='auto-detect')
                     accent_dropdown = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'], value='no-accent', label='accent')
+                    textbox_transcript = gr.TextArea(label="Transcript",
+                                          placeholder="Write transcript here. (leave empty to use whisper)",
+                                          value="", elem_id=f"prompt-name")
                     upload_audio_prompt = gr.Audio(label='uploaded audio prompt', source='upload', interactive=True)
                     record_audio_prompt = gr.Audio(label='recorded audio prompt', source='microphone', interactive=True)
                 with gr.Column():
@@ -328,7 +345,7 @@ def main():
                     audio_output = gr.Audio(label="Output Audio", elem_id="tts-audio")
                     btn = gr.Button("Generate!")
                     btn.click(infer_from_audio,
-                              inputs=[textbox, language_dropdown, accent_dropdown, upload_audio_prompt, record_audio_prompt],
+                              inputs=[textbox, language_dropdown, accent_dropdown, upload_audio_prompt, record_audio_prompt, textbox_transcript],
                               outputs=[text_output, audio_output])
                     textbox_mp = gr.TextArea(label="Prompt name",
                                           placeholder="Name your prompt here",
@@ -336,7 +353,7 @@ def main():
                     btn_mp = gr.Button("Make prompt!")
                     prompt_output = gr.File(interactive=False)
                     btn_mp.click(make_npz_prompt,
-                                inputs=[textbox_mp, upload_audio_prompt, record_audio_prompt],
+                                inputs=[textbox_mp, upload_audio_prompt, record_audio_prompt, textbox_transcript],
                                 outputs=[text_output, prompt_output])
         with gr.Tab("Make prompt"):
             gr.Markdown(make_prompt_md)
@@ -346,7 +363,7 @@ def main():
                                           placeholder="Name your prompt here",
                                           value="prompt_1", elem_id=f"prompt-name")
                     # 添加选择语言和输入台本的地方
-                    textbox_transcript = gr.TextArea(label="Transcript",
+                    textbox_transcript2 = gr.TextArea(label="Transcript",
                                           placeholder="Write transcript here. (leave empty to use whisper)",
                                           value="", elem_id=f"prompt-name")
                     upload_audio_prompt_2 = gr.Audio(label='uploaded audio prompt', source='upload', interactive=True)
@@ -356,7 +373,7 @@ def main():
                     prompt_output_2 = gr.File(interactive=False)
                     btn_2 = gr.Button("Make!")
                     btn_2.click(make_npz_prompt,
-                              inputs=[textbox2, upload_audio_prompt_2, record_audio_prompt_2, textbox_transcript],
+                              inputs=[textbox2, upload_audio_prompt_2, record_audio_prompt_2, textbox_transcript2],
                               outputs=[text_output_2, prompt_output_2])
         with gr.Tab("Infer from prompt"):
             gr.Markdown(infer_from_prompt_md)
