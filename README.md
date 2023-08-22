@@ -23,6 +23,9 @@ More details about the model are presented in [model card](./model-card.md).
 * [🧠 TODO](#-todo)
 
 ## 🚀 Updates
+**2023.08.23**
+- Added long text generation.
+
 **2023.08.20**
 - Added [Chinese README](README-ZH.md).
 
