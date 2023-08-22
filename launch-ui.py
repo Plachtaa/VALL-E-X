@@ -321,6 +321,132 @@ def infer_from_prompt(text, language, accent, prompt_file):
     return message, (24000, samples[0][0].cpu().numpy())
 
 
+from utils.sentence_cutter import split_text_into_sentences
+@torch.no_grad()
+def infer_long_text(text, prompt=None, language='auto', accent='no-accent'):
+    """
+    For long audio generation, two modes are available.
+    fixed-prompt: This mode will keep using the same prompt the user has provided, and generate audio sentence by sentence.
+    sliding-window: This mode will use the last sentence as the prompt for the next sentence, but has some concern on speaker maintenance.
+    """
+    mode = 'fixed-prompt'
+    global model, audio_tokenizer, text_tokenizer, text_collater
+    model.to(device)
+    if prompt is None or prompt == "":
+        mode = 'sliding-window'  # If no prompt is given, use sliding-window mode
+    sentences = split_text_into_sentences(text)
+    # detect language
+    if language == "auto-detect":
+        language = langid.classify(text)[0]
+    else:
+        language = token2lang[langdropdown2token[language]]
+
+    # if initial prompt is given, encode it
+    if prompt is not None and prompt != "":
+        # load prompt
+        prompt_data = np.load(prompt.name)
+        audio_prompts = prompt_data['audio_tokens']
+        text_prompts = prompt_data['text_tokens']
+        lang_pr = prompt_data['lang_code']
+        lang_pr = code2lang[int(lang_pr)]
+
+        # numpy to tensor
+        audio_prompts = torch.tensor(audio_prompts).type(torch.int32).to(device)
+        text_prompts = torch.tensor(text_prompts).type(torch.int32)
+    else:
+        audio_prompts = torch.zeros([1, 0, NUM_QUANTIZERS]).type(torch.int32).to(device)
+        text_prompts = torch.zeros([1, 0]).type(torch.int32)
+        lang_pr = language if language != 'mix' else 'en'
+    if mode == 'fixed-prompt':
+        complete_tokens = torch.zeros([1, NUM_QUANTIZERS, 0]).type(torch.LongTensor).to(device)
+        for text in sentences:
+            text = text.replace("\n", "").strip(" ")
+            if text == "":
+                continue
+            lang_token = lang2token[language]
+            lang = token2lang[lang_token]
+            text = lang_token + text + lang_token
+
+            enroll_x_lens = text_prompts.shape[-1]
+            logging.info(f"synthesize text: {text}")
+            phone_tokens, langs = text_tokenizer.tokenize(text=f"_{text}".strip())
+            text_tokens, text_tokens_lens = text_collater(
+                [
+                    phone_tokens
+                ]
+            )
+            text_tokens = torch.cat([text_prompts, text_tokens], dim=-1)
+            text_tokens_lens += enroll_x_lens
+            # accent control
+            lang = lang if accent == "no-accent" else token2lang[langdropdown2token[accent]]
+            encoded_frames = model.inference(
+                text_tokens.to(device),
+                text_tokens_lens.to(device),
+                audio_prompts,
+                enroll_x_lens=enroll_x_lens,
+                top_k=-100,
+                temperature=1,
+                prompt_language=lang_pr,
+                text_language=langs if accent == "no-accent" else lang,
+            )
+            complete_tokens = torch.cat([complete_tokens, encoded_frames.transpose(2, 1)], dim=-1)
+        samples = audio_tokenizer.decode(
+            [(complete_tokens, None)]
+        )
+        model.to('cpu')
+        message = f"Cut into {len(sentences)} sentences"
+        return message, (24000, samples[0][0].cpu().numpy())
+    elif mode == "sliding-window":
+        complete_tokens = torch.zeros([1, NUM_QUANTIZERS, 0]).type(torch.LongTensor).to(device)
+        original_audio_prompts = audio_prompts
+        original_text_prompts = text_prompts
+        for text in sentences:
+            text = text.replace("\n", "").strip(" ")
+            if text == "":
+                continue
+            lang_token = lang2token[language]
+            lang = token2lang[lang_token]
+            text = lang_token + text + lang_token
+
+            enroll_x_lens = text_prompts.shape[-1]
+            logging.info(f"synthesize text: {text}")
+            phone_tokens, langs = text_tokenizer.tokenize(text=f"_{text}".strip())
+            text_tokens, text_tokens_lens = text_collater(
+                [
+                    phone_tokens
+                ]
+            )
+            text_tokens = torch.cat([text_prompts, text_tokens], dim=-1)
+            text_tokens_lens += enroll_x_lens
+            # accent control
+            lang = lang if accent == "no-accent" else token2lang[langdropdown2token[accent]]
+            encoded_frames = model.inference(
+                text_tokens.to(device),
+                text_tokens_lens.to(device),
+                audio_prompts,
+                enroll_x_lens=enroll_x_lens,
+                top_k=-100,
+                temperature=1,
+                prompt_language=lang_pr,
+                text_language=langs if accent == "no-accent" else lang,
+            )
+            complete_tokens = torch.cat([complete_tokens, encoded_frames.transpose(2, 1)], dim=-1)
+            if torch.rand(1) < 1.0:
+                audio_prompts = encoded_frames[:, :, -NUM_QUANTIZERS:]
+                text_prompts = text_tokens[:, enroll_x_lens:]
+            else:
+                audio_prompts = original_audio_prompts
+                text_prompts = original_text_prompts
+        samples = audio_tokenizer.decode(
+            [(complete_tokens, None)]
+        )
+        model.to('cpu')
+        message = f"Cut into {len(sentences)} sentences"
+        return message, (24000, samples[0][0].cpu().numpy())
+    else:
+        raise ValueError(f"No such mode {mode}")
+
+
 def main():
     app = gr.Blocks()
     with app:
@@ -394,6 +520,25 @@ def main():
                     btn_3.click(infer_from_prompt,
                               inputs=[textbox_3, language_dropdown_3, accent_dropdown_3, prompt_file],
                               outputs=[text_output_3, audio_output_3])
+        with gr.Tab("Infer long text"):
+            gr.Markdown("This is a long text generation demo. You can use this to generate long audio. ")
+            with gr.Row():
+                with gr.Column():
+                    textbox_4 = gr.TextArea(label="Text",
+                                          placeholder="Type your sentence here",
+                                          value=long_text_example, elem_id=f"tts-input")
+                    language_dropdown_4 = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語'], value='auto-detect',
+                                                    label='language')
+                    accent_dropdown_4 = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'], value='no-accent',
+                                                    label='accent')
+                    prompt_file_4 = gr.File(file_count='single', file_types=['.npz'], interactive=True)
+                with gr.Column():
+                    text_output_4 = gr.TextArea(label="Message")
+                    audio_output_4 = gr.Audio(label="Output Audio", elem_id="tts-audio")
+                    btn_4 = gr.Button("Generate!")
+                    btn_4.click(infer_long_text,
+                              inputs=[textbox_4, prompt_file_4, language_dropdown_4, accent_dropdown_4],
+                              outputs=[text_output_4, audio_output_4])
 
     app.launch()
 
