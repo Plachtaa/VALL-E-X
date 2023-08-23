@@ -16,6 +16,9 @@ os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 import langid
 langid.set_languages(['en', 'zh', 'ja'])
 
+import nltk
+nltk.download('punkt')
+
 import torch
 import torchaudio
 import random
