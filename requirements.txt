@@ -11,7 +11,7 @@ encodec
 langid
 gdown
 unidecode
-pyopenjtalk
+pyopenjtalk-prebuilt
 pypinyin
 inflect
 cn2an

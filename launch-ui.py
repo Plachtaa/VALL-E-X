@@ -137,7 +137,7 @@ def make_npz_prompt(name, uploaded_audio, recorded_audio, transcript_content):
     if wav_pr.abs().max() > 1:
         wav_pr /= wav_pr.abs().max()
     if wav_pr.size(-1) == 2:
-        wav_pr = wav_pr.mean(-1, keepdim=False)
+        wav_pr = wav_pr[:, 0]
     if wav_pr.ndim == 1:
         wav_pr = wav_pr.unsqueeze(0)
     assert wav_pr.ndim and wav_pr.size(0) == 1
@@ -200,13 +200,12 @@ def infer_from_audio(text, language, accent, audio_prompt, record_audio_prompt, 
     model.to(device)
     audio_prompt = audio_prompt if audio_prompt is not None else record_audio_prompt
     sr, wav_pr = audio_prompt
-    sr, wav_pr = audio_prompt
     if not isinstance(wav_pr, torch.FloatTensor):
         wav_pr = torch.FloatTensor(wav_pr)
     if wav_pr.abs().max() > 1:
         wav_pr /= wav_pr.abs().max()
     if wav_pr.size(-1) == 2:
-        wav_pr = wav_pr.mean(-1, keepdim=False)
+        wav_pr = wav_pr[:, 0]
     if wav_pr.ndim == 1:
         wav_pr = wav_pr.unsqueeze(0)
     assert wav_pr.ndim and wav_pr.size(0) == 1
@@ -479,7 +478,7 @@ def main():
                     textbox = gr.TextArea(label="Text",
                                           placeholder="Type your sentence here",
                                           value="Welcome back, Master. What can I do for you today?", elem_id=f"tts-input")
-                    language_dropdown = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語'], value='English', label='auto-detect')
+                    language_dropdown = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語'], value='auto-detect', label='auto-detect')
                     accent_dropdown = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'], value='no-accent', label='accent')
                     textbox_transcript = gr.TextArea(label="Transcript",
                                           placeholder="Write transcript here. (leave empty to use whisper)",

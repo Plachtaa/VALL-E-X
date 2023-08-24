@@ -21,6 +21,9 @@ VALL-E X 是一个强大而创新的多语言文本转语音（TTS）模型，�
 * [🧠 TODO](#-todo)
 
 ## 🚀 Updates
+**2023.08.24**
+- 如果无法访问Google Drive，请从[Hugging Face链接](https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt)下载模型权重，并将其放在`./checkpoints/`文件夹中。
+
 **2023.08.23**
 - 加入了长文本生成功能
 
@@ -35,7 +38,7 @@ VALL-E X 是一个强大而创新的多语言文本转语音（TTS）模型，�
 ```commandline
 git clone https://github.com/Plachtaa/VALL-E-X.git
 cd VALL-E-X
-pip install --no-error-on-external -r requirements.txt
+pip install -r requirements.txt
 ```
 ##  🎧 在线Demo
 如果你不想在本地安装，你可以在线体验VALL-E X的功能，点击下面的任意一个链接即可开始体验。
