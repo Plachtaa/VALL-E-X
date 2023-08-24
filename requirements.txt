@@ -22,3 +22,5 @@ openai-whisper
 phonemizer
 matplotlib
 gradio
+nltk
+sudachipy
