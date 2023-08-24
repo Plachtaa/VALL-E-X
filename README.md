@@ -39,6 +39,9 @@ git clone https://github.com/Plachtaa/VALL-E-X.git
 cd VALL-E-X
 pip install -r requirements.txt
 ```
+
+> Note: If you want to make prompt, you need to install ffmpeg and add its folder to the environment variable PATH.
+
 ##  🎧 Demos
 Not ready to set up the environment on your local machine just yet? No problem! We've got you covered with our online demos. You can try out VALL-E X directly on Hugging Face or Google Colab, experiencing the model's capabilities hassle-free!
 <br>
