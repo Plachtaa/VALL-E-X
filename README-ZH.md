@@ -40,6 +40,9 @@ git clone https://github.com/Plachtaa/VALL-E-X.git
 cd VALL-E-X
 pip install -r requirements.txt
 ```
+
+> 注意：如果需要制作prompt，需要安装 ffmpeg 并将其所在文件夹加入到环境变量PATH中
+
 ##  🎧 在线Demo
 如果你不想在本地安装，你可以在线体验VALL-E X的功能，点击下面的任意一个链接即可开始体验。
 <br>
