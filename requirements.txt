@@ -1,8 +1,8 @@
 soundfile
 numpy
-torch==2.0.1+cu118 --index-url https://download.pytorch.org/whl/cu118
-torchvision==0.15.1+cu118 --index-url https://download.pytorch.org/whl/cu118
-torchaudio==2.0.1 --index-url https://download.pytorch.org/whl/cu118
+torch
+torchvision
+torchaudio
 tokenizers
 encodec
 langid
