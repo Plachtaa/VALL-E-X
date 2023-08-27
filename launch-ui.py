@@ -5,6 +5,7 @@ import pathlib
 import time
 import tempfile
 import platform
+import webbrowser
 if platform.system().lower() == 'windows':
     temp = pathlib.PosixPath
     pathlib.PosixPath = pathlib.WindowsPath
@@ -61,7 +62,14 @@ if torch.cuda.is_available():
 if not os.path.exists("./checkpoints/"): os.mkdir("./checkpoints/")
 if not os.path.exists(os.path.join("./checkpoints/", "vallex-checkpoint.pt")):
     import gdown
-    gdown.download(id="10gdQWvP-K_e1undkvv0p2b7SU6I4Egyl", output=os.path.join("./checkpoints/", "vallex-checkpoint.pt"), quiet=False)
+    try:
+        gdown.download(id="10gdQWvP-K_e1undkvv0p2b7SU6I4Egyl", output=os.path.join("./checkpoints/", "vallex-checkpoint.pt"), quiet=False)
+    except Exception as e:
+        print(e)
+        raise Exception(
+            "\nModel weights download failed, please go to 'https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt'"
+            "\ndownload model weights and put it to {} .".format(os.getcwd() + "\checkpoints"))
+
 model = VALLE(
         N_DIM,
         NUM_HEAD,
@@ -577,6 +585,7 @@ def main():
                               inputs=[textbox_4, preset_dropdown_4, prompt_file_4, language_dropdown_4, accent_dropdown_4],
                               outputs=[text_output_4, audio_output_4])
 
+    webbrowser.open("http://127.0.0.1:7860")
     app.launch()
 
 if __name__ == "__main__":
