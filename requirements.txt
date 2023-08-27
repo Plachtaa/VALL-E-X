@@ -21,3 +21,4 @@ matplotlib
 gradio
 nltk
 sudachipy
+vocos
