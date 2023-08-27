@@ -34,6 +34,7 @@ from models.vallex import VALLE
 from utils.g2p import PhonemeBpeTokenizer
 from descriptions import *
 from macros import *
+from examples import *
 
 import gradio as gr
 import whisper
@@ -500,6 +501,11 @@ def main():
                     btn_mp.click(make_npz_prompt,
                                 inputs=[textbox_mp, upload_audio_prompt, record_audio_prompt, textbox_transcript],
                                 outputs=[text_output, prompt_output])
+            gr.Examples(examples=infer_from_audio_examples,
+                        inputs=[textbox, language_dropdown, accent_dropdown, upload_audio_prompt, record_audio_prompt, textbox_transcript],
+                        outputs=[text_output, audio_output],
+                        fn=infer_from_audio,
+                        cache_examples=False,)
         with gr.Tab("Make prompt"):
             gr.Markdown(make_prompt_md)
             with gr.Row():
@@ -520,6 +526,11 @@ def main():
                     btn_2.click(make_npz_prompt,
                               inputs=[textbox2, upload_audio_prompt_2, record_audio_prompt_2, textbox_transcript2],
                               outputs=[text_output_2, prompt_output_2])
+            gr.Examples(examples=make_npz_prompt_examples,
+                        inputs=[textbox2, upload_audio_prompt_2, record_audio_prompt_2, textbox_transcript2],
+                        outputs=[text_output_2, prompt_output_2],
+                        fn=make_npz_prompt,
+                        cache_examples=False,)
         with gr.Tab("Infer from prompt"):
             gr.Markdown(infer_from_prompt_md)
             with gr.Row():
@@ -540,6 +551,11 @@ def main():
                     btn_3.click(infer_from_prompt,
                               inputs=[textbox_3, language_dropdown_3, accent_dropdown_3, preset_dropdown_3, prompt_file],
                               outputs=[text_output_3, audio_output_3])
+            gr.Examples(examples=infer_from_prompt_examples,
+                        inputs=[textbox_3, language_dropdown_3, accent_dropdown_3, preset_dropdown_3, prompt_file],
+                        outputs=[text_output_3, audio_output_3],
+                        fn=infer_from_prompt,
+                        cache_examples=False,)
         with gr.Tab("Infer long text"):
             gr.Markdown("This is a long text generation demo. You can use this to generate long audio. ")
             with gr.Row():

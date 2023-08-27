@@ -23,4 +23,9 @@ Faster than **"Infer from audio"**.<br>
 You need to **"Make prompt"** first, and upload the encoded prompt (a `.npz` file)
 """
 
+long_text_md = """
+Very long text is chunked into several sentences, and each sentence is synthesized separately.<br>
+Please make a prompt or use a preset prompt to infer long text.
+"""
+
 long_text_example = "Just a few years ago, there were no legions of deep learning scientists developing intelligent products and services at major companies and startups. When we entered the field, machine learning did not command headlines in daily newspapers. Our parents had no idea what machine learning was, let alone why we might prefer it to a career in medicine or law. Machine learning was a blue skies academic discipline whose industrial significance was limited to a narrow set of real-world applications, including speech recognition and computer vision. Moreover, many of these applications required so much domain knowledge that they were often regarded as entirely separate areas for which machine learning was one small component. At that time, neural networks—the predecessors of the deep learning methods that we focus on in this book—were generally regarded as outmoded."
