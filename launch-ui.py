@@ -18,7 +18,7 @@ import langid
 langid.set_languages(['en', 'zh', 'ja'])
 
 import nltk
-nltk.download('punkt')
+nltk.data.path = nltk.data.path + [os.path.join(os.getcwd(), "nltk_data")]
 
 import torch
 import torchaudio
