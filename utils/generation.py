@@ -1,5 +1,6 @@
 import os
 import torch
+from vocos import Vocos
 import gdown
 import logging
 import langid
@@ -40,11 +41,13 @@ model = None
 
 codec = None
 
+vocos = None
+
 text_tokenizer = PhonemeBpeTokenizer(tokenizer_path="./utils/g2p/bpe_69.json")
 text_collater = get_text_token_collater()
 
 def preload_models():
-    global model, codec
+    global model, codec, vocos
     if not os.path.exists(checkpoints_dir): os.mkdir(checkpoints_dir)
     if not os.path.exists(os.path.join(checkpoints_dir, model_checkpoint_name)):
         gdown.download(id="10gdQWvP-K_e1undkvv0p2b7SU6I4Egyl", output=os.path.join(checkpoints_dir, model_checkpoint_name), quiet=False)
@@ -70,10 +73,12 @@ def preload_models():
 
     # Encodec
     codec = AudioTokenizer(device)
+    
+    vocos = Vocos.from_pretrained('charactr/vocos-encodec-24khz').to(device)
 
 @torch.no_grad()
 def generate_audio(text, prompt=None, language='auto', accent='no-accent'):
-    global model, codec, text_tokenizer, text_collater
+    global model, codec, vocos, text_tokenizer, text_collater
     text = text.replace("\n", "").strip(" ")
     # detect language
     if language == "auto":
@@ -127,11 +132,12 @@ def generate_audio(text, prompt=None, language='auto', accent='no-accent'):
         prompt_language=lang_pr,
         text_language=langs if accent == "no-accent" else lang,
     )
-    samples = codec.decode(
-        [(encoded_frames.transpose(2, 1), None)]
-    )
+    # Decode with Vocos
+    frames = encoded_frames.permute(2,0,1)
+    features = vocos.codes_to_features(frames)
+    samples = vocos.decode(features, bandwidth_id=torch.tensor([2], device=device))
 
-    return samples[0][0].cpu().numpy()
+    return samples.squeeze().cpu().numpy()
 
 @torch.no_grad()
 def generate_audio_from_long_text(text, prompt=None, language='auto', accent='no-accent', mode='sliding-window'):
@@ -140,7 +146,7 @@ def generate_audio_from_long_text(text, prompt=None, language='auto', accent='no
     fixed-prompt: This mode will keep using the same prompt the user has provided, and generate audio sentence by sentence.
     sliding-window: This mode will use the last sentence as the prompt for the next sentence, but has some concern on speaker maintenance.
     """
-    global model, codec, text_tokenizer, text_collater
+    global model, codec, vocos, text_tokenizer, text_collater
     if prompt is None or prompt == "":
         mode = 'sliding-window'  # If no prompt is given, use sliding-window mode
     sentences = split_text_into_sentences(text)
@@ -203,10 +209,11 @@ def generate_audio_from_long_text(text, prompt=None, language='auto', accent='no
                 text_language=langs if accent == "no-accent" else lang,
             )
             complete_tokens = torch.cat([complete_tokens, encoded_frames.transpose(2, 1)], dim=-1)
-        samples = codec.decode(
-            [(complete_tokens, None)]
-        )
-        return samples[0][0].cpu().numpy()
+        # Decode with Vocos
+        frames = complete_tokens.permute(1,0,2)
+        features = vocos.codes_to_features(frames)
+        samples = vocos.decode(features, bandwidth_id=torch.tensor([2], device=device))
+        return samples.squeeze().cpu().numpy()
     elif mode == "sliding-window":
         complete_tokens = torch.zeros([1, NUM_QUANTIZERS, 0]).type(torch.LongTensor).to(device)
         original_audio_prompts = audio_prompts
@@ -248,9 +255,10 @@ def generate_audio_from_long_text(text, prompt=None, language='auto', accent='no
             else:
                 audio_prompts = original_audio_prompts
                 text_prompts = original_text_prompts
-        samples = codec.decode(
-            [(complete_tokens, None)]
-        )
-        return samples[0][0].cpu().numpy()
+        # Decode with Vocos
+        frames = complete_tokens.permute(1,0,2)
+        features = vocos.codes_to_features(frames)
+        samples = vocos.decode(features, bandwidth_id=torch.tensor([2], device=device))
+        return samples.squeeze().cpu().numpy()
     else:
         raise ValueError(f"No such mode {mode}")
