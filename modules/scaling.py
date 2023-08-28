@@ -1046,7 +1046,7 @@ class MaxEig(torch.nn.Module):
 
         self.min_prob = min_prob
         # cur_prob is the current probability we'll use to apply the ActivationBalancer.
-        # We'll regress this towards prob, each tiem we try to apply it and it is not
+        # We'll regress this towards prob, each time we try to apply it and it is not
         # active.
         self.cur_prob = 1.0
 
