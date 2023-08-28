@@ -93,7 +93,8 @@ model.eval()
 audio_tokenizer = AudioTokenizer(device)
 
 # ASR
-whisper_model = whisper.load_model("medium").cpu()
+if not os.path.exists("./whisper/"): os.mkdir("./whisper/")
+whisper_model = whisper.load_model("medium",download_root=os.path.join(os.getcwd(), "whisper")).cpu()
 
 # Voice Presets
 preset_list = os.walk("./presets/").__next__()[2]
