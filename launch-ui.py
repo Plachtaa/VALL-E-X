@@ -95,9 +95,6 @@ audio_tokenizer = AudioTokenizer(device)
 # ASR
 whisper_model = whisper.load_model("medium").cpu()
 
-
-
-
 # Voice Presets
 preset_list = os.walk("./presets/").__next__()[2]
 preset_list = [preset[:-4] for preset in preset_list if preset.endswith(".npz")]
