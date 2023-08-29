@@ -11,7 +11,7 @@ import platform
 if platform.system().lower() == 'windows':
     temp = pathlib.PosixPath
     pathlib.PosixPath = pathlib.WindowsPath
-elif platform.system().lower() == 'linux':
+else:
     temp = pathlib.WindowsPath
     pathlib.WindowsPath = pathlib.PosixPath
 
