@@ -43,6 +43,20 @@ pip install -r requirements.txt
 
 > 注意：如果需要制作prompt，需要安装 ffmpeg 并将其所在文件夹加入到环境变量PATH中
 
+第一次运行程序时，会自动下载相应的模型。如果下载失败并报错，请按照以下步骤手动下载模型。
+
+（请注意目录和文件夹的大小写）
+
+1.检查安装目录下是否存在`checkpoints`文件夹，如果没有，在安装目录下手动创建`checkpoints`文件夹（`./checkpoints/`）。
+
+2.检查`checkpoints`文件夹中是否有`vallex-checkpoint.pt`文件。如果没有，请从[这里](https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt)
+手动下载`vallex-checkpoint.pt`文件并放到`checkpoints`文件夹里。
+
+3.检查安装目录下是否存在`whisper`文件夹，如果没有，在安装目录下手动创建`whisper`文件夹（`./whisper/`）。
+
+4.检查`whisper`文件夹中是否有`medium.pt`文件。如果没有，请从[这里](https://openaipublic.azureedge.net/main/whisper/models/345ae4da62f9b3d59415adc60127b97c714f32e89e936602e85993674d08dcb1/medium.pt)
+手动下载`medium.pt`文件并放到`whisper`文件夹里。
+
 ##  🎧 在线Demo
 如果你不想在本地安装，你可以在线体验VALL-E X的功能，点击下面的任意一个链接即可开始体验。
 <br>
@@ -267,8 +281,8 @@ VALL-E X 可以在CPU或GPU上运行 (`pytorch 2.0+`, CUDA 11.7 ~ CUDA 12.0).
 VALL-E X 与 [Bark](https://github.com/suno-ai/bark), [VALL-E](https://arxiv.org/abs/2301.02111) and [AudioLM](https://arxiv.org/abs/2209.03143)类似, 使用GPT风格的模型以自回归方式预测量化音频token，并由[EnCodec](https://github.com/facebookresearch/encodec)解码.
 <br>
 与 [Bark](https://github.com/suno-ai/bark) 相比:
-- ✔ **轻量**: 3️⃣ ✖ smaller,
-- ✔ **快速**: 4️⃣ ✖ faster, 
+- ✔ **轻量**: 3️⃣ ✖ 更小,
+- ✔ **快速**: 4️⃣ ✖ 更快, 
 - ✔ **中文&日文的更高质量**
 - ✔ **跨语言合成时没有外国口音**
 - ✔ **开放且易于操作的声音克隆**
@@ -277,44 +291,42 @@ VALL-E X 与 [Bark](https://github.com/suno-ai/bark), [VALL-E](https://arxiv.org
 
 ### 支持的语言
 
-| Language | Status |
-| --- | :---: |
-| English (en) | ✅ |
-| Japanese (ja) | ✅ |
-| Chinese, simplified (zh) | ✅ |
+| 语言      | 状态 |
+|---------| :---: |
+| 英语 (en) | ✅ |
+| 日语 (ja) | ✅ |
+| 中文 (zh) | ✅ |
 
 ## ❓ FAQ
 
-#### Where can I download the model checkpoint?
-* We use `gdown` to download the model to directory `./checkpoints/` when you run `preload_models()` for the first time.
+#### 在哪里可以下载checkpoint?
+* 当您第一次运行程序时,我们使用`wget`将模型下载到`./checkpoints/`目录里。
+* 如果第一次运行时下载失败，请从[这里](https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt)手动下载模型，并将文件放在`./checkpoints/`里。
 
-#### How much VRAM do I need?
-* 6GB GPU VRAM - Almost all NVIDIA GPUs satisfy the requirement.
+#### 需要多少显存?
+* 6GB 显存(GPU VRAM) - 几乎所有NVIDIA GPU都满足要求.
 
-#### Why the model fails to generate long text?
-* Transformer's computation complexity increases quadratically while the sequence length increases. Hence, all training 
-are kept under 22 seconds. Please make sure the total length of audio prompt and generated audio is less than 22 seconds 
-to ensure acceptable performance. 
-* To generate long text, a huge paragraph must be breakdown into short sentences. We are currently working on this.
+#### 为什么模型无法生成长文本?
+* 当序列长度增加时，Transformer的计算复杂度呈二次方增长。因此，所有训练音频都保持在22秒以下。请确保音频提示（audio prompt）和生成的音频的总长度小于22秒以确保可接受的性能。
 
-#### MORE TO BE ADDED...
+#### 更多...
 
-## 🧠 TODO
-- [x] Add Chinese README
-- [ ] `.bat` scripts for non-python users
-- [x] Long text generation
-- [ ] Fine-tuning for better voice adaptation
-- [ ] Replace Encodec decoder with Vocos decoder
-- [ ] To be added...
+## 🧠 待办事项
+- [x] 添加中文 README
+- [ ] 给非python用户的`.bat`脚本
+- [x] 长文本生成
+- [ ] 微调以实现更好的语音自适应
+- [ ] 用Vocos解码器替换Encodec解码器
+- [ ] 更多...
 
-## 🙏 Appreciation
+## 🙏 感谢
 - [VALL-E X paper](https://arxiv.org/pdf/2303.03926) for the brilliant idea
 - [lifeiteng's vall-e](https://github.com/lifeiteng/vall-e) for related training code
 - [bark](https://github.com/suno-ai/bark) for the amazing pioneering work in neuro-codec TTS model
 
-## ⭐️ Show Your Support
+## ⭐️ 表示出你的支持
 
-If you find VALL-E X interesting and useful, give us a star on GitHub! ⭐️ It encourages us to keep improving the model and adding exciting features.
+如果您觉得VALL-E X有趣且有用，请在GitHub上给我们一颗星！ ⭐️ 它鼓励我们不断改进模型并添加令人兴奋的功能。
 
 ## 📜 License
 
@@ -322,6 +334,6 @@ VALL-E X 使用 [MIT License](./LICENSE).
 
 ---
 
-Have questions or need assistance? Feel free to [open an issue](https://github.com/Plachtaa/VALL-E-X/issues/new) or join our [Discord](https://discord.gg/qCBRmAnTxg)
+有问题或需要帮助？ 可以随便 [open an issue](https://github.com/Plachtaa/VALL-E-X/issues/new) 或加入我们的 [Discord](https://discord.gg/qCBRmAnTxg)
 
 Happy voice cloning! 🎤

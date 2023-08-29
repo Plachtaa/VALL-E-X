@@ -6,7 +6,6 @@ torchaudio
 tokenizers
 encodec
 langid
-gdown
 wget
 unidecode
 pyopenjtalk-prebuilt
@@ -15,7 +14,6 @@ inflect
 cn2an
 jieba
 eng_to_ipa
-jieba
 openai-whisper
 phonemizer
 matplotlib
