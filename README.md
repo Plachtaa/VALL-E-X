@@ -221,6 +221,12 @@ make_prompt(name="paimon", audio_prompt_path="paimon_prompt.wav")
 ```
 Now let's try out the prompt we've just made!
 ```python
+from utils.generation import SAMPLE_RATE, generate_audio, preload_models
+from scipy.io.wavfile import write as write_wav
+
+# download and load all models
+preload_models()
+
 text_prompt = """
 Hey, Traveler, Listen to this, This machine has taken my voice, and now it can talk just like me!
 """
