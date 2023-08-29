@@ -473,7 +473,7 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
 
 
 def main():
-    app = gr.Blocks()
+    app = gr.Blocks(title="VALL-E-X")
     with app:
         gr.Markdown(top_md)
         with gr.Tab("Infer from audio"):
