@@ -61,14 +61,10 @@ if torch.cuda.is_available():
 # VALL-E-X model
 if not os.path.exists("./checkpoints/"): os.mkdir("./checkpoints/")
 if not os.path.exists(os.path.join("./checkpoints/", "vallex-checkpoint.pt")):
-    import gdown
-    try:
-        gdown.download(id="10gdQWvP-K_e1undkvv0p2b7SU6I4Egyl", output=os.path.join("./checkpoints/", "vallex-checkpoint.pt"), quiet=False)
-    except Exception as e:
-        print(e)
-        raise Exception(
-            "\nModel weights download failed, please go to 'https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt'"
-            "\ndownload model weights and put it to {} .".format(os.getcwd() + "\checkpoints"))
+    import wget
+    logging.info("Downloading model from https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt ...")
+    # download from https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt to ./checkpoints/vallex-checkpoint.pt
+    wget.download("https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt", out="./checkpoints/vallex-checkpoint.pt", bar=wget.bar_adaptive)
 
 model = VALLE(
         N_DIM,

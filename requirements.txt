@@ -7,6 +7,7 @@ tokenizers
 encodec
 langid
 gdown
+wget
 unidecode
 pyopenjtalk-prebuilt
 pypinyin
