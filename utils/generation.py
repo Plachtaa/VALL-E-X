@@ -31,7 +31,7 @@ device = torch.device("cpu")
 if torch.cuda.is_available():
     device = torch.device("cuda", 0)
 
-url = 'https://drive.google.com/file/d/10gdQWvP-K_e1undkvv0p2b7SU6I4Egyl/view?usp=sharing'
+url = 'https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt'
 
 checkpoints_dir = "./checkpoints/"
 
@@ -50,7 +50,10 @@ def preload_models():
     global model, codec, vocos
     if not os.path.exists(checkpoints_dir): os.mkdir(checkpoints_dir)
     if not os.path.exists(os.path.join(checkpoints_dir, model_checkpoint_name)):
-        gdown.download(id="10gdQWvP-K_e1undkvv0p2b7SU6I4Egyl", output=os.path.join(checkpoints_dir, model_checkpoint_name), quiet=False)
+        import wget
+        logging.info(f"Downloading model from {url} ...")
+        # download from https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt to ./checkpoints/vallex-checkpoint.pt
+        wget.download(url, out="./checkpoints/vallex-checkpoint.pt", bar=wget.bar_adaptive)
     # VALL-E
     model = VALLE(
         N_DIM,
