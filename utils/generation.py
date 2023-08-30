@@ -1,7 +1,6 @@
 import os
 import torch
 from vocos import Vocos
-import gdown
 import logging
 import langid
 langid.set_languages(['en', 'zh', 'ja'])
@@ -51,9 +50,17 @@ def preload_models():
     if not os.path.exists(checkpoints_dir): os.mkdir(checkpoints_dir)
     if not os.path.exists(os.path.join(checkpoints_dir, model_checkpoint_name)):
         import wget
-        logging.info(f"Downloading model from {url} ...")
-        # download from https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt to ./checkpoints/vallex-checkpoint.pt
-        wget.download(url, out="./checkpoints/vallex-checkpoint.pt", bar=wget.bar_adaptive)
+        try:
+            logging.info(
+                "Downloading model from https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt ...")
+            # download from https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt to ./checkpoints/vallex-checkpoint.pt
+            wget.download("https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt",
+                          out="./checkpoints/vallex-checkpoint.pt", bar=wget.bar_adaptive)
+        except Exception as e:
+            logging.info(e)
+            raise Exception(
+                "\n Model weights download failed, please go to 'https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt'"
+                "\n manually download model weights and put it to {} .".format(os.getcwd() + "\checkpoints"))
     # VALL-E
     model = VALLE(
         N_DIM,
