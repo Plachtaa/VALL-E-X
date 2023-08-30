@@ -23,7 +23,7 @@ More details about the model are presented in [model card](./model-card.md).
 * [🧠 TODO](#-todo)
 
 ## 🚀 Updates
-**2023.08.30
+**2023.08.30**
 - Replaced EnCodec decoder with Vocos decoder, improved audio quality. (Thanks to [@v0xie](https://github.com/v0xie))
 
 **2023.08.23**
