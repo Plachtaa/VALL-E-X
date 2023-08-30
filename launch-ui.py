@@ -39,6 +39,7 @@ from examples import *
 
 import gradio as gr
 import whisper
+from vocos import Vocos
 import multiprocessing
 
 thread_count = multiprocessing.cpu_count()
@@ -94,6 +95,9 @@ model.eval()
 
 # Encodec model
 audio_tokenizer = AudioTokenizer(device)
+
+# Vocos decoder
+vocos = Vocos.from_pretrained('charactr/vocos-encodec-24khz').to(device)
 
 # ASR
 if not os.path.exists("./whisper/"): os.mkdir("./whisper/")
@@ -281,16 +285,17 @@ def infer_from_audio(text, language, accent, audio_prompt, record_audio_prompt, 
         prompt_language=lang_pr,
         text_language=langs if accent == "no-accent" else lang,
     )
-    samples = audio_tokenizer.decode(
-        [(encoded_frames.transpose(2, 1), None)]
-    )
+    # Decode with Vocos
+    frames = encoded_frames.permute(2,0,1)
+    features = vocos.codes_to_features(frames)
+    samples = vocos.decode(features, bandwidth_id=torch.tensor([2], device=device))
 
     # offload model
     model.to('cpu')
     torch.cuda.empty_cache()
 
     message = f"text prompt: {text_pr}\nsythesized text: {text}"
-    return message, (24000, samples[0][0].cpu().numpy())
+    return message, (24000, samples.squeeze(0).cpu().numpy())
 
 @torch.no_grad()
 def infer_from_prompt(text, language, accent, preset_prompt, prompt_file):
@@ -340,14 +345,16 @@ def infer_from_prompt(text, language, accent, preset_prompt, prompt_file):
         prompt_language=lang_pr,
         text_language=langs if accent == "no-accent" else lang,
     )
-    samples = audio_tokenizer.decode(
-        [(encoded_frames.transpose(2, 1), None)]
-    )
+    # Decode with Vocos
+    frames = encoded_frames.permute(2,0,1)
+    features = vocos.codes_to_features(frames)
+    samples = vocos.decode(features, bandwidth_id=torch.tensor([2], device=device))
+
     model.to('cpu')
     torch.cuda.empty_cache()
 
     message = f"sythesized text: {text}"
-    return message, (24000, samples[0][0].cpu().numpy())
+    return message, (24000, samples.squeeze(0).cpu().numpy())
 
 
 from utils.sentence_cutter import split_text_into_sentences
@@ -429,12 +436,14 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
                 text_language=langs if accent == "no-accent" else lang,
             )
             complete_tokens = torch.cat([complete_tokens, encoded_frames.transpose(2, 1)], dim=-1)
-        samples = audio_tokenizer.decode(
-            [(complete_tokens, None)]
-        )
+        # Decode with Vocos
+        frames = encoded_frames.permute(2, 0, 1)
+        features = vocos.codes_to_features(frames)
+        samples = vocos.decode(features, bandwidth_id=torch.tensor([2], device=device))
+
         model.to('cpu')
         message = f"Cut into {len(sentences)} sentences"
-        return message, (24000, samples[0][0].cpu().numpy())
+        return message, (24000, samples.squeeze(0).cpu().numpy())
     elif mode == "sliding-window":
         complete_tokens = torch.zeros([1, NUM_QUANTIZERS, 0]).type(torch.LongTensor).to(device)
         original_audio_prompts = audio_prompts
@@ -476,18 +485,20 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
             else:
                 audio_prompts = original_audio_prompts
                 text_prompts = original_text_prompts
-        samples = audio_tokenizer.decode(
-            [(complete_tokens, None)]
-        )
+        # Decode with Vocos
+        frames = encoded_frames.permute(2, 0, 1)
+        features = vocos.codes_to_features(frames)
+        samples = vocos.decode(features, bandwidth_id=torch.tensor([2], device=device))
+
         model.to('cpu')
         message = f"Cut into {len(sentences)} sentences"
-        return message, (24000, samples[0][0].cpu().numpy())
+        return message, (24000, samples.squeeze(0).cpu().numpy())
     else:
         raise ValueError(f"No such mode {mode}")
 
 
 def main():
-    app = gr.Blocks(title="VALL-E-X")
+    app = gr.Blocks(title="VALL-E X")
     with app:
         gr.Markdown(top_md)
         with gr.Tab("Infer from audio"):

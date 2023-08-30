@@ -21,8 +21,8 @@ VALL-E X 是一个强大而创新的多语言文本转语音（TTS）模型，�
 * [🧠 TODO](#-todo)
 
 ## 🚀 Updates
-**2023.08.24**
-- 如果无法访问Google Drive，请从[Hugging Face链接](https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt)下载模型权重，并将其放在`./checkpoints/`文件夹中。
+**2023.08.30
+- 将EnCodec解码器替换成了Vocos解码器，提升了音质。 (感谢[@v0xie](https://github.com/v0xie))
 
 **2023.08.23**
 - 加入了长文本生成功能
@@ -313,10 +313,10 @@ VALL-E X 与 [Bark](https://github.com/suno-ai/bark), [VALL-E](https://arxiv.org
 
 ## 🧠 待办事项
 - [x] 添加中文 README
-- [ ] 给非python用户的`.bat`脚本
 - [x] 长文本生成
+- [x] 用Vocos解码器替换Encodec解码器
 - [ ] 微调以实现更好的语音自适应
-- [ ] 用Vocos解码器替换Encodec解码器
+- [ ] 给非python用户的`.bat`脚本
 - [ ] 更多...
 
 ## 🙏 感谢

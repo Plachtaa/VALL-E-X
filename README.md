@@ -23,6 +23,9 @@ More details about the model are presented in [model card](./model-card.md).
 * [🧠 TODO](#-todo)
 
 ## 🚀 Updates
+**2023.08.30
+- Replaced EnCodec decoder with Vocos decoder, improved audio quality. (Thanks to [@v0xie](https://github.com/v0xie))
+
 **2023.08.23**
 - Added long text generation.
 
@@ -320,10 +323,10 @@ to ensure acceptable performance.
 
 ## 🧠 TODO
 - [x] Add Chinese README
-- [ ] `.bat` scripts for non-python users
 - [x] Long text generation
+- [x] Replace Encodec decoder with Vocos decoder
 - [ ] Fine-tuning for better voice adaptation
-- [ ] Replace Encodec decoder with Vocos decoder
+- [ ] `.bat` scripts for non-python users
 - [ ] To be added...
 
 ## 🙏 Appreciation
