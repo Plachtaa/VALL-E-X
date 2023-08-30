@@ -437,7 +437,7 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
             )
             complete_tokens = torch.cat([complete_tokens, encoded_frames.transpose(2, 1)], dim=-1)
         # Decode with Vocos
-        frames = encoded_frames.permute(2, 0, 1)
+        frames = complete_tokens.permute(1, 0, 2)
         features = vocos.codes_to_features(frames)
         samples = vocos.decode(features, bandwidth_id=torch.tensor([2], device=device))
 
@@ -486,7 +486,7 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
                 audio_prompts = original_audio_prompts
                 text_prompts = original_text_prompts
         # Decode with Vocos
-        frames = encoded_frames.permute(2, 0, 1)
+        frames = complete_tokens.permute(1, 0, 2)
         features = vocos.codes_to_features(frames)
         samples = vocos.decode(features, bandwidth_id=torch.tensor([2], device=device))
 
