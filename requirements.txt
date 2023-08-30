@@ -15,9 +15,10 @@ cn2an
 jieba
 eng_to_ipa
 openai-whisper
-phonemizer
+phonemizer==3.2.0
 matplotlib
 gradio
 nltk
 sudachipy
+sudachidict_core
 vocos

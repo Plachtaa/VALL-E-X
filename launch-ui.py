@@ -509,7 +509,7 @@ def main():
                     textbox = gr.TextArea(label="Text",
                                           placeholder="Type your sentence here",
                                           value="Welcome back, Master. What can I do for you today?", elem_id=f"tts-input")
-                    language_dropdown = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語'], value='auto-detect', label='auto-detect')
+                    language_dropdown = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語'], value='auto-detect', label='language')
                     accent_dropdown = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'], value='no-accent', label='accent')
                     textbox_transcript = gr.TextArea(label="Transcript",
                                           placeholder="Write transcript here. (leave empty to use whisper)",

@@ -27,7 +27,6 @@ from phonemizer.backend.espeak.language_switch import LanguageSwitch
 from phonemizer.backend.espeak.words_mismatch import WordMismatch
 from phonemizer.punctuation import Punctuation
 from phonemizer.separator import Separator
-from phonemizer.separator import Separator
 
 try:
     from pypinyin import Style, pinyin
