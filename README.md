@@ -273,7 +273,7 @@ Not comfortable with codes? No problem! We've also created a user-friendly graph
 <br>
 You can launch the UI by the following command:
 ```commandline
-python launch-ui.py
+python -X utf8 launch-ui.py
 ```
 </details>
 

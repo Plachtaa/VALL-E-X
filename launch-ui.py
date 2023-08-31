@@ -1,3 +1,4 @@
+# coding: utf-8
 import argparse
 import logging
 import os
@@ -6,6 +7,12 @@ import time
 import tempfile
 import platform
 import webbrowser
+import sys
+print(f"default encoding is {sys.getdefaultencoding()},file system encoding is {sys.getfilesystemencoding()}")
+print(f"You are using Python version {platform.python_version()}")
+if(sys.version_info[0]<3 or sys.version_info[1]<7):
+    print("The Python version is too low and may cause problems")
+
 if platform.system().lower() == 'windows':
     temp = pathlib.PosixPath
     pathlib.PosixPath = pathlib.WindowsPath
@@ -208,7 +215,7 @@ def make_prompt(name, wav, sr, save=True):
     lang, text = transcribe_one(whisper_model, f"./prompts/{name}.wav")
     lang_token = lang2token[lang]
     text = lang_token + text + lang_token
-    with open(f"./prompts/{name}.txt", 'w') as f:
+    with open(f"./prompts/{name}.txt", 'w', encoding='utf-8') as f:
         f.write(text)
     if not save:
         os.remove(f"./prompts/{name}.wav")
