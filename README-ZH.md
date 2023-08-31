@@ -266,7 +266,7 @@ write_wav("paimon_cloned.wav", SAMPLE_RATE, audio_array)
 <br>
 使用以下命令启动用户界面：
 ```commandline
-python launch-ui.py
+python -X utf8 launch-ui.py
 ```
 </details>
 
