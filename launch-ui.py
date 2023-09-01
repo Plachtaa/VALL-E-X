@@ -615,7 +615,7 @@ def main():
                               outputs=[text_output_4, audio_output_4])
 
     webbrowser.open("http://127.0.0.1:7860")
-    app.launch()
+    app.launch(share=True)
 
 if __name__ == "__main__":
     formatter = (
