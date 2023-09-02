@@ -158,7 +158,7 @@ class SymbolTable(Generic[Symbol]):
           filename:
             Name of the symbol table file. Its format is documented above.
         '''
-        with open(filename, 'w') as f:
+        with open(filename, 'w', encoding='utf-8') as f:
             for idx, symbol in sorted(self._id2sym.items()):
                 print(symbol, idx, file=f)
 
