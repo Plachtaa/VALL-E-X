@@ -23,6 +23,9 @@ More details about the model are presented in [model card](./model-card.md).
 * [🧠 TODO](#-todo)
 
 ## 🚀 Updates
+**2023.09.10**
+- Added AR decoder batch decoding for more stable generation result.
+
 **2023.08.30**
 - Replaced EnCodec decoder with Vocos decoder, improved audio quality. (Thanks to [@v0xie](https://github.com/v0xie))
 

@@ -21,6 +21,9 @@ VALL-E X 是一个强大而创新的多语言文本转语音（TTS）模型，�
 * [🧠 TODO](#-todo)
 
 ## 🚀 Updates
+**2023.09.10**
+- 支持AR decoder的batch decoding以实现更稳定的生成结果
+
 **2023.08.30**
 - 将EnCodec解码器替换成了Vocos解码器，提升了音质。 (感谢[@v0xie](https://github.com/v0xie))
 

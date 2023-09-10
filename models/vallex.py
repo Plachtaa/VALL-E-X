@@ -465,6 +465,9 @@ class VALLE(VALLF):
         temperature: float = 1.0,
         prompt_language: str = None,
         text_language: str = None,
+        best_of: int = 1,
+        length_penalty: float = 1.0,
+        return_worst: bool = False,
     ) -> torch.Tensor:
         """
         Args:
@@ -518,6 +521,10 @@ class VALLE(VALLF):
 
         kv_cache = None
         use_kv_caching = True
+
+        sum_logprobs = torch.zeros(best_of, device=y.device)  # implement batch decoding here
+        x = x.repeat(best_of, 1, 1)
+        y = y.repeat(best_of, 1)
         while True:
             y_emb = self.ar_audio_embedding(y)
             y_emb = self.ar_audio_prenet(y_emb)
@@ -559,20 +566,32 @@ class VALLE(VALLF):
             # )
 
             logits = self.ar_predict_layer(xy_dec[:, -1])
-            samples = topk_sampling(
+            samples, current_logprobs = topk_sampling(
                 logits, top_k=top_k, top_p=1, temperature=temperature
             )
-
+            sum_logprobs += current_logprobs * (y[:, -1] != NUM_AUDIO_TOKENS)
+            samples[y[:, -1] == NUM_AUDIO_TOKENS] = NUM_AUDIO_TOKENS
+            completed = (samples[:, -1] == NUM_AUDIO_TOKENS).all()
             if (
-                torch.argmax(logits, dim=-1)[0] == NUM_AUDIO_TOKENS
-                or samples[0, 0] == NUM_AUDIO_TOKENS
+                completed
                 or (y.shape[1] - prompts.shape[1]) > x_lens.max() * 16
             ):
                 if prompts.shape[1] == y.shape[1]:
                     raise SyntaxError(
                         "well trained model shouldn't reach here."
                     )
-
+                lengths = torch.sum(y != NUM_AUDIO_TOKENS, dim=1)
+                avg_logprobs = sum_logprobs / lengths ** length_penalty
+                # choose the best beam according to sum_logprobs
+                best_beam = y[torch.argmax(avg_logprobs), :]
+                worst_beam = y[torch.argmin(avg_logprobs), :]
+                # strip all eos tokens
+                best_beam = best_beam[best_beam != NUM_AUDIO_TOKENS]
+                worst_beam = worst_beam[worst_beam != NUM_AUDIO_TOKENS]
+                if return_worst:
+                    y = worst_beam.unsqueeze(0)
+                else:
+                    y = best_beam.unsqueeze(0)
                 print(f"VALL-E EOS [{prompts.shape[1]} -> {y.shape[1]}]")
                 break
 
@@ -829,4 +848,6 @@ def topk_sampling(logits, top_k=10, top_p=1.0, temperature=1.0):
     logits = top_k_top_p_filtering(logits, top_k=top_k, top_p=top_p)
     # Sample
     token = torch.multinomial(F.softmax(logits, dim=-1), num_samples=1)
-    return token
+    logprobs = F.log_softmax(logits.float(), dim=-1)
+    current_logprobs = logprobs[torch.arange(logprobs.shape[0]), token.squeeze(1)]
+    return token, current_logprobs
