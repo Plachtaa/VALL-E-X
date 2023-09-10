@@ -1,3 +1,4 @@
+# coding: utf-8
 import os
 import torch
 from vocos import Vocos
