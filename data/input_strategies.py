@@ -19,9 +19,7 @@ class PromptedFeatures:
         self.features = features
 
     def to(self, device):
-        return PromptedFeatures(
-            self.prompts.to(device), self.features.to(device)
-        )
+        return PromptedFeatures(self.prompts.to(device), self.features.to(device))
 
     def sum(self):
         return self.features.sum()

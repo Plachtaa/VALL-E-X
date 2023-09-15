@@ -9,6 +9,7 @@ from torch.nn.init import constant_, xavier_normal_, xavier_uniform_
 from torch.nn.modules.linear import NonDynamicallyQuantizableLinear
 from torch.nn.parameter import Parameter
 
+
 def _in_projection_packed(
     q: Tensor,
     k: Tensor,
@@ -64,6 +65,7 @@ def _in_projection_packed(
             b_q, b_k, b_v = b.chunk(3)
         return F.linear(q, w_q, b_q), F.linear(k, w_k, b_k), F.linear(v, w_v, b_v)
 
+
 def _scaled_dot_product_attention(
     q: Tensor,
     k: Tensor,
@@ -111,16 +113,17 @@ def _scaled_dot_product_attention(
     output = torch.bmm(attn, v)
     return output, attn
 
+
 def multi_head_attention_forward(
-        x,
-        ipw,
-        ipb,
-        opw,
-        opb,
-        n_head,
-        attn_mask,
-        past_kv=None,
-        use_cache=False,
+    x,
+    ipw,
+    ipb,
+    opw,
+    opb,
+    n_head,
+    attn_mask,
+    past_kv=None,
+    use_cache=False,
 ):
     # x = x.transpose(1, 0)
     # tgt_len, bsz, embed_dim = x.shape
@@ -159,10 +162,12 @@ def multi_head_attention_forward(
         present = None
 
     att = (q @ k.transpose(-2, -1)) * (1.0 / math.sqrt(k.size(-1)))
-    att = att.masked_fill(attn_mask[FULL_T - T:FULL_T, :FULL_T], float('-inf'))
+    att = att.masked_fill(attn_mask[FULL_T - T : FULL_T, :FULL_T], float("-inf"))
     att = F.softmax(att, dim=-1)
     y = att @ v  # (B, nh, T, T) x (B, nh, T, hs) -> (B, nh, T, hs)
-    y = y.transpose(1, 2).contiguous().view(B, T, C)  # re-assemble all head outputs side by side
+    y = (
+        y.transpose(1, 2).contiguous().view(B, T, C)
+    )  # re-assemble all head outputs side by side
     y = torch._C._nn.linear(y, opw, opb)
     return (y, present)
 
@@ -228,45 +233,39 @@ class MultiheadAttention(Module):
     bias_v: Optional[torch.Tensor]
 
     def __init__(
-            self,
-            embed_dim,
-            num_heads,
-            dropout=0.0,
-            bias=True,
-            add_bias_kv=False,
-            add_zero_attn=False,
-            kdim=None,
-            vdim=None,
-            batch_first=False,
-            linear1_cls=Linear,
-            linear2_cls=Linear,
-            device=None,
-            dtype=None,
+        self,
+        embed_dim,
+        num_heads,
+        dropout=0.0,
+        bias=True,
+        add_bias_kv=False,
+        add_zero_attn=False,
+        kdim=None,
+        vdim=None,
+        batch_first=False,
+        linear1_cls=Linear,
+        linear2_cls=Linear,
+        device=None,
+        dtype=None,
     ) -> None:
         factory_kwargs = {"device": device, "dtype": dtype}
         super(MultiheadAttention, self).__init__()
         self.embed_dim = embed_dim
         self.kdim = kdim if kdim is not None else embed_dim
         self.vdim = vdim if vdim is not None else embed_dim
-        self._qkv_same_embed_dim = (
-                self.kdim == embed_dim and self.vdim == embed_dim
-        )
+        self._qkv_same_embed_dim = self.kdim == embed_dim and self.vdim == embed_dim
 
         self.num_heads = num_heads
         self.dropout = dropout
         self.batch_first = batch_first
         self.head_dim = embed_dim // num_heads
         assert (
-                self.head_dim * num_heads == self.embed_dim
+            self.head_dim * num_heads == self.embed_dim
         ), "embed_dim must be divisible by num_heads"
 
         if add_bias_kv:
-            self.bias_k = Parameter(
-                torch.empty((1, 1, embed_dim), **factory_kwargs)
-            )
-            self.bias_v = Parameter(
-                torch.empty((1, 1, embed_dim), **factory_kwargs)
-            )
+            self.bias_k = Parameter(torch.empty((1, 1, embed_dim), **factory_kwargs))
+            self.bias_v = Parameter(torch.empty((1, 1, embed_dim), **factory_kwargs))
         else:
             self.bias_k = self.bias_v = None
 
@@ -355,14 +354,14 @@ class MultiheadAttention(Module):
         super(MultiheadAttention, self).__setstate__(state)
 
     def forward(
-            self,
-            query: Tensor,
-            key: Tensor,
-            value: Tensor,
-            key_padding_mask: Optional[Tensor] = None,
-            need_weights: bool = True,
-            attn_mask: Optional[Tensor] = None,
-            average_attn_weights: bool = True,
+        self,
+        query: Tensor,
+        key: Tensor,
+        value: Tensor,
+        key_padding_mask: Optional[Tensor] = None,
+        need_weights: bool = True,
+        attn_mask: Optional[Tensor] = None,
+        average_attn_weights: bool = True,
     ) -> Tuple[Tensor, Optional[Tensor]]:
         r"""
         Args:
@@ -416,27 +415,25 @@ class MultiheadAttention(Module):
         if key_padding_mask is not None:
             _kpm_dtype = key_padding_mask.dtype
             if _kpm_dtype != torch.bool and not torch.is_floating_point(
-                    key_padding_mask
+                key_padding_mask
             ):
                 raise AssertionError(
                     "only bool and floating types of key_padding_mask are supported"
                 )
         why_not_fast_path = ""
         if not is_batched:
-            why_not_fast_path = f"input not batched; expected query.dim() of 3 but got {query.dim()}"
+            why_not_fast_path = (
+                f"input not batched; expected query.dim() of 3 but got {query.dim()}"
+            )
         elif query is not key or key is not value:
             # When lifting this restriction, don't forget to either
             # enforce that the dtypes all match or test cases where
             # they don't!
             why_not_fast_path = "non-self attention was used (query, key, and value are not the same Tensor)"
-        elif (
-                self.in_proj_bias is not None
-                and query.dtype != self.in_proj_bias.dtype
-        ):
+        elif self.in_proj_bias is not None and query.dtype != self.in_proj_bias.dtype:
             why_not_fast_path = f"dtypes of query ({query.dtype}) and self.in_proj_bias ({self.in_proj_bias.dtype}) don't match"
         elif (
-                self.in_proj_weight is not None
-                and query.dtype != self.in_proj_weight.dtype
+            self.in_proj_weight is not None and query.dtype != self.in_proj_weight.dtype
         ):
             # this case will fail anyway, but at least they'll get a useful error message.
             why_not_fast_path = f"dtypes of query ({query.dtype}) and self.in_proj_weight ({self.in_proj_weight.dtype}) don't match"
@@ -480,16 +477,14 @@ class MultiheadAttention(Module):
             if torch.overrides.has_torch_function(tensor_args):
                 why_not_fast_path = "some Tensor argument has_torch_function"
             elif not all(
-                    [
-                        (x is None or x.is_cuda or "cpu" in str(x.device))
-                        for x in tensor_args
-                    ]
+                [
+                    (x is None or x.is_cuda or "cpu" in str(x.device))
+                    for x in tensor_args
+                ]
             ):
-                why_not_fast_path = (
-                    "some Tensor argument is neither CUDA nor CPU"
-                )
+                why_not_fast_path = "some Tensor argument is neither CUDA nor CPU"
             elif torch.is_grad_enabled() and any(
-                    [x is not None and x.requires_grad for x in tensor_args]
+                [x is not None and x.requires_grad for x in tensor_args]
             ):
                 why_not_fast_path = (
                     "grad is enabled and at least one of query or the "
@@ -506,9 +501,7 @@ class MultiheadAttention(Module):
                     self.in_proj_bias,
                     self.out_proj.weight,
                     self.out_proj.bias,
-                    key_padding_mask
-                    if key_padding_mask is not None
-                    else attn_mask,
+                    key_padding_mask if key_padding_mask is not None else attn_mask,
                     need_weights,
                     average_attn_weights,
                     1
@@ -520,8 +513,8 @@ class MultiheadAttention(Module):
 
         any_nested = query.is_nested or key.is_nested or value.is_nested
         assert not any_nested, (
-                "MultiheadAttention does not support NestedTensor outside of its fast path. "
-                + f"The fast path was not hit because {why_not_fast_path}"
+            "MultiheadAttention does not support NestedTensor outside of its fast path. "
+            + f"The fast path was not hit because {why_not_fast_path}"
         )
 
         if self.batch_first and is_batched:
@@ -533,9 +526,7 @@ class MultiheadAttention(Module):
                     query, key = [x.transpose(1, 0) for x in (query, key)]
                     value = key
             else:
-                query, key, value = [
-                    x.transpose(1, 0) for x in (query, key, value)
-                ]
+                query, key, value = [x.transpose(1, 0) for x in (query, key, value)]
 
         if not self._qkv_same_embed_dim:
             attn_output, attn_output_weights = F.multi_head_attention_forward(
@@ -588,25 +579,26 @@ class MultiheadAttention(Module):
         else:
             return attn_output, attn_output_weights
 
-    def infer(self,
-              x: Tensor,
-              key_padding_mask: Optional[Tensor] = None,
-              need_weights: bool = True,
-              attn_mask: Optional[Tensor] = None,
-              average_attn_weights: bool = True,
-              past_kv = None,
-              use_cache = False
-              ):
+    def infer(
+        self,
+        x: Tensor,
+        key_padding_mask: Optional[Tensor] = None,
+        need_weights: bool = True,
+        attn_mask: Optional[Tensor] = None,
+        average_attn_weights: bool = True,
+        past_kv=None,
+        use_cache=False,
+    ):
         # x = x.transpose(1, 0)
         y, kv = multi_head_attention_forward(
-                x=x,
-                ipw=self.in_proj_weight,
-                ipb=self.in_proj_bias,
-                opw=self.out_proj.weight,
-                opb=self.out_proj.bias,
-                n_head=self.num_heads,
-                attn_mask=attn_mask,
-                past_kv=past_kv,
-                use_cache=use_cache,
+            x=x,
+            ipw=self.in_proj_weight,
+            ipb=self.in_proj_bias,
+            opw=self.out_proj.weight,
+            opb=self.out_proj.bias,
+            n_head=self.num_heads,
+            attn_mask=attn_mask,
+            past_kv=past_kv,
+            use_cache=use_cache,
         )
         return (y, kv)

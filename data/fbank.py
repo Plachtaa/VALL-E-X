@@ -20,6 +20,7 @@ from typing import Any, Dict, Optional, Union
 
 import numpy as np
 import torch
+
 # from lhotse.features.base import FeatureExtractor
 # from lhotse.utils import EPSILON, Seconds, compute_num_frames
 from librosa.filters import mel as librosa_mel_fn
@@ -89,9 +90,7 @@ class BigVGANFbank(FeatureExtractor):
                 sampling_rate=sampling_rate,
             )
             pad_size = (
-                (expected_num_frames - 1) * hop_size
-                + win_length
-                - samples.shape[-1]
+                (expected_num_frames - 1) * hop_size + win_length - samples.shape[-1]
             )
             assert pad_size >= 0
 
@@ -163,8 +162,7 @@ class BigVGANFbank(FeatureExtractor):
             np.maximum(
                 # protection against log(0); max with EPSILON is adequate since these are energies (always >= 0)
                 EPSILON,
-                np.exp(features_a)
-                + energy_scaling_factor_b * np.exp(features_b),
+                np.exp(features_a) + energy_scaling_factor_b * np.exp(features_b),
             )
         )
 
@@ -189,9 +187,7 @@ if __name__ == "__main__":
 
     MAX_WAV_VALUE = 32768.0
 
-    sampling_rate, samples = read(
-        "egs/libritts/prompts/5639_40744_000000_000002.wav"
-    )
+    sampling_rate, samples = read("egs/libritts/prompts/5639_40744_000000_000002.wav")
     print(f"samples: [{samples.min()}, {samples.max()}]")
     fbank = extractor.extract(samples.astype(np.float32) / MAX_WAV_VALUE, 24000)
     print(f"fbank {fbank.shape}")

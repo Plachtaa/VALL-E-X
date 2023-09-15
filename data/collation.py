@@ -53,15 +53,10 @@ class TextTokenCollater:
         self.token2idx = {token: idx for idx, token in enumerate(unique_tokens)}
         self.idx2token = [token for token in unique_tokens]
 
-    def index(
-        self, tokens_list: List[str]
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    def index(self, tokens_list: List[str]) -> Tuple[torch.Tensor, torch.Tensor]:
         seqs, seq_lens = [], []
         for tokens in tokens_list:
-            assert (
-                all([True if s in self.token2idx else False for s in tokens])
-                is True
-            )
+            assert all([True if s in self.token2idx else False for s in tokens]) is True
             seq = (
                 ([self.bos_symbol] if self.add_bos else [])
                 + list(tokens)
@@ -104,17 +99,12 @@ class TextTokenCollater:
         )
 
         tokens_lens = torch.IntTensor(
-            [
-                len(seq) + int(self.add_eos) + int(self.add_bos)
-                for seq in tokens_seqs
-            ]
+            [len(seq) + int(self.add_eos) + int(self.add_bos) for seq in tokens_seqs]
         )
 
         return tokens_batch, tokens_lens
 
 
 def get_text_token_collater() -> TextTokenCollater:
-    collater = TextTokenCollater(
-        ['0'], add_bos=False, add_eos=False
-    )
+    collater = TextTokenCollater(["0"], add_bos=False, add_eos=False)
     return collater

@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 import torch
+
 # from icefall.utils import str2bool
 # from lhotse import CutSet, load_manifest_lazy
 # from lhotse.dataset import (
@@ -37,6 +38,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from data.collation import get_text_token_collater
+
 # from data.dataset import SpeechSynthesisDataset
 from data.fbank import get_fbank_extractor
 from data.input_strategies import PromptedPrecomputedFeatures
@@ -250,9 +252,7 @@ class TtsDataModule:
         input_transforms = []
         if self.args.enable_spec_aug:
             logging.info("Enable SpecAugment")
-            logging.info(
-                f"Time warp factor: {self.args.spec_aug_time_warp_factor}"
-            )
+            logging.info(f"Time warp factor: {self.args.spec_aug_time_warp_factor}")
             # Set the value of num_frame_masks according to Lhotse's version.
             # In different Lhotse's versions, the default of num_frame_masks is
             # different.
@@ -313,9 +313,7 @@ class TtsDataModule:
                 drop_last=self.args.drop_last,
             )
         else:
-            logging.info(
-                "Using SingleCutSampler and sort by duraton(ascending=True)."
-            )
+            logging.info("Using SingleCutSampler and sort by duraton(ascending=True).")
             cuts_train = cuts_train.to_eager().sort_by_duration(ascending=True)
             train_sampler = SingleCutSampler(
                 cuts_train,
@@ -382,9 +380,7 @@ class TtsDataModule:
             get_text_token_collater(self.args.text_tokens),
             feature_input_strategy=OnTheFlyFeatures(get_fbank_extractor())
             if self.args.on_the_fly_feats
-            else _get_input_strategy(
-                self.args.input_strategy, self.args.dataset, cuts
-            ),
+            else _get_input_strategy(self.args.input_strategy, self.args.dataset, cuts),
             cut_transforms=[],
         )
         sampler = DynamicBucketingSampler(
@@ -404,9 +400,7 @@ class TtsDataModule:
     @lru_cache()
     def train_cuts(self) -> CutSet:
         logging.info("About to get train cuts")
-        return load_manifest_lazy(
-            self.args.manifest_dir / "cuts_train.jsonl.gz"
-        )
+        return load_manifest_lazy(self.args.manifest_dir / "cuts_train.jsonl.gz")
 
     @lru_cache()
     def dev_cuts(self) -> CutSet:
