@@ -1,3 +1,9 @@
+"""
+This code demonstrates how to run VALL-E-X with the pipeline-ai SDK.
+This allows you to run VALL-E-X on the cloud with a single command, and
+a demo is avaible here: https://www.mystic.ai/paulh/vall-e-x/play.
+"""
+
 import pathlib
 from pipeline import Pipeline, Variable, pipe
 from pipeline.objects.graph import Directory
