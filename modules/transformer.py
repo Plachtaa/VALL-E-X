@@ -242,13 +242,9 @@ class TransformerEncoderLayer(nn.Module):
 
         norm1 = layer_norm_cls(d_model, eps=layer_norm_eps, **factory_kwargs)
         if layer_norm_cls == IdentityNorm:
-            norm2 = BalancedBasicNorm(
-                d_model, eps=layer_norm_eps, **factory_kwargs
-            )
+            norm2 = BalancedBasicNorm(d_model, eps=layer_norm_eps, **factory_kwargs)
         else:
-            norm2 = layer_norm_cls(
-                d_model, eps=layer_norm_eps, **factory_kwargs
-            )
+            norm2 = layer_norm_cls(d_model, eps=layer_norm_eps, **factory_kwargs)
 
         if adaptive_layer_norm:
             self.norm1 = AdaptiveLayerNorm(d_model, norm1)
@@ -462,7 +458,11 @@ class TransformerEncoder(nn.Module):
         output = src
         for mod, past_layer_kv in zip(self.layers, past_kv):
             output, kv = mod.infer(
-                output, src_mask=mask, src_key_padding_mask=src_key_padding_mask, past_kv=past_layer_kv, use_cache=use_cache
+                output,
+                src_mask=mask,
+                src_key_padding_mask=src_key_padding_mask,
+                past_kv=past_layer_kv,
+                use_cache=use_cache,
             )
             if use_cache:
                 new_kv = new_kv + (kv,)
@@ -540,26 +540,16 @@ class TransformerDecoderLayer(nn.Module):
             self.activation = activation
 
         if adaptive_layer_norm:
-            norm1 = layer_norm_cls(
-                d_model, eps=layer_norm_eps, **factory_kwargs
-            )
-            norm2 = layer_norm_cls(
-                d_model, eps=layer_norm_eps, **factory_kwargs
-            )
-            norm3 = layer_norm_cls(
-                d_model, eps=layer_norm_eps, **factory_kwargs
-            )
+            norm1 = layer_norm_cls(d_model, eps=layer_norm_eps, **factory_kwargs)
+            norm2 = layer_norm_cls(d_model, eps=layer_norm_eps, **factory_kwargs)
+            norm3 = layer_norm_cls(d_model, eps=layer_norm_eps, **factory_kwargs)
 
             self.norm1 = AdaptiveLayerNorm(d_model, norm1)
             self.norm2 = AdaptiveLayerNorm(d_model, norm2)
             self.norm3 = AdaptiveLayerNorm(d_model, norm3)
         else:
-            self.norm1 = layer_norm_cls(
-                d_model, eps=layer_norm_eps, **factory_kwargs
-            )
-            self.norm2 = layer_norm_cls(
-                d_model, eps=layer_norm_eps, **factory_kwargs
-            )
+            self.norm1 = layer_norm_cls(d_model, eps=layer_norm_eps, **factory_kwargs)
+            self.norm2 = layer_norm_cls(d_model, eps=layer_norm_eps, **factory_kwargs)
             if layer_norm_cls == IdentityNorm:
                 self.norm3 = BalancedBasicNorm(
                     d_model, eps=layer_norm_eps, **factory_kwargs
@@ -615,10 +605,7 @@ class TransformerDecoderLayer(nn.Module):
                 stage_embedding,
             )
             x = self.norm2(
-                x
-                + self._mha_block(
-                    x, memory, memory_mask, memory_key_padding_mask
-                ),
+                x + self._mha_block(x, memory, memory_mask, memory_key_padding_mask),
                 stage_embedding,
             )
             x = self.norm3(x + self._ff_block(x), stage_embedding)
@@ -678,6 +665,4 @@ def _get_activation_fn(activation: str) -> Callable[[Tensor], Tensor]:
     elif activation == "gelu":
         return F.gelu
 
-    raise RuntimeError(
-        "activation should be relu/gelu, not {}".format(activation)
-    )
+    raise RuntimeError("activation should be relu/gelu, not {}".format(activation))

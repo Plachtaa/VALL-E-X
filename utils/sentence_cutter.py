@@ -2,7 +2,9 @@ import nltk
 import jieba
 import sudachipy
 import langid
-langid.set_languages(['en', 'zh', 'ja'])
+
+langid.set_languages(["en", "zh", "ja"])
+
 
 def split_text_into_sentences(text):
     if langid.classify(text)[0] == "en":
@@ -16,7 +18,7 @@ def split_text_into_sentences(text):
         start = 0
         for i, seg in enumerate(segs):
             if seg in ["。", "！", "？", "……"]:
-                sentences.append("".join(segs[start:i + 1]))
+                sentences.append("".join(segs[start : i + 1]))
                 start = i + 1
         if start < len(segs):
             sentences.append("".join(segs[start:]))
@@ -30,7 +32,10 @@ def split_text_into_sentences(text):
 
         for token in tokens:
             current_sentence += token.surface()
-            if token.part_of_speech()[0] == "補助記号" and token.part_of_speech()[1] == "句点":
+            if (
+                token.part_of_speech()[0] == "補助記号"
+                and token.part_of_speech()[1] == "句点"
+            ):
                 sentences.append(current_sentence)
                 current_sentence = ""
 
@@ -40,6 +45,7 @@ def split_text_into_sentences(text):
         return sentences
 
     raise RuntimeError("It is impossible to reach here.")
+
 
 long_text = """
 This is a very long paragraph, so most TTS model is unable to handle it. Hence, we have to split it into several sentences. With the help of NLTK, we can split it into sentences. However, the punctuation is not preserved, so we have to add it back. How are we going to do write this code? Let's see. 

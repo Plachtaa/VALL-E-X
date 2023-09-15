@@ -60,9 +60,7 @@ class PypinyinBackend:
             phones = []
             if self.backend == "pypinyin":
                 for n, py in enumerate(
-                    pinyin(
-                        _text, style=Style.TONE3, neutral_tone_with_five=True
-                    )
+                    pinyin(_text, style=Style.TONE3, neutral_tone_with_five=True)
                 ):
                     if all([c in self.punctuation_marks for c in py[0]]):
                         if len(phones):
@@ -74,9 +72,7 @@ class PypinyinBackend:
                         phones.extend([py[0], separator.syllable])
             elif self.backend == "pypinyin_initials_finals":
                 for n, py in enumerate(
-                    pinyin(
-                        _text, style=Style.TONE3, neutral_tone_with_five=True
-                    )
+                    pinyin(_text, style=Style.TONE3, neutral_tone_with_five=True)
                 ):
                     if all([c in self.punctuation_marks for c in py[0]]):
                         if len(phones):
@@ -87,10 +83,7 @@ class PypinyinBackend:
                         if py[0][-1].isalnum():
                             initial = get_initials(py[0], strict=False)
                             if py[0][-1].isdigit():
-                                final = (
-                                    get_finals(py[0][:-1], strict=False)
-                                    + py[0][-1]
-                                )
+                                final = get_finals(py[0][:-1], strict=False) + py[0][-1]
                             else:
                                 final = get_finals(py[0], strict=False)
                             phones.extend(
@@ -153,8 +146,7 @@ class TextTokenizer:
             # "ɐ    m|iː|n?"    ɹ|ɪ|z|ɜː|v; h|ɪ|z.
             pp = re.findall(r"\w+|[^\w\s]", word, re.UNICODE)
             fields.extend(
-                [p for p in pp if p != self.separator.phone]
-                + [self.separator.word]
+                [p for p in pp if p != self.separator.phone] + [self.separator.word]
             )
         assert len("".join(fields[:-1])) == len(phonemized) - phonemized.count(
             self.separator.phone
@@ -365,9 +357,7 @@ if __name__ == "__main__":
     model = EncodecModel.encodec_model_24khz()
     model.set_target_bandwidth(6.0)
 
-    samples = torch.from_numpy(np.random.random([4, 1, 1600])).type(
-        torch.float32
-    )
+    samples = torch.from_numpy(np.random.random([4, 1, 1600])).type(torch.float32)
     codes_raw = model.encode(samples)
 
     remove_encodec_weight_norm(model)

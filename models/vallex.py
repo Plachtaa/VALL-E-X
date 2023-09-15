@@ -19,6 +19,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
 # from icefall.utils import make_pad_mask
 # from torchmetrics.classification import MulticlassAccuracy
 
@@ -151,9 +152,7 @@ class VALLF(nn.Module):
             num_layers=num_layers,
             norm=LayerNorm(d_model) if norm_first else None,
         )
-        self.ar_predict_layer = nn.Linear(
-            d_model, NUM_AUDIO_TOKENS + 1, bias=False
-        )
+        self.ar_predict_layer = nn.Linear(d_model, NUM_AUDIO_TOKENS + 1, bias=False)
 
         self.rng = random.Random(0)
         self.num_heads = nhead
@@ -174,21 +173,15 @@ class VALLF(nn.Module):
             if add_prenet:
                 self.nar_text_prenet = nn.Sequential(
                     Transpose(),
-                    nn.Conv1d(
-                        nar_d_model, nar_d_model, kernel_size=5, padding="same"
-                    ),
+                    nn.Conv1d(nar_d_model, nar_d_model, kernel_size=5, padding="same"),
                     nn.BatchNorm1d(nar_d_model),
                     nn.ReLU(),
                     nn.Dropout(0.5),
-                    nn.Conv1d(
-                        nar_d_model, nar_d_model, kernel_size=5, padding="same"
-                    ),
+                    nn.Conv1d(nar_d_model, nar_d_model, kernel_size=5, padding="same"),
                     nn.BatchNorm1d(nar_d_model),
                     nn.ReLU(),
                     nn.Dropout(0.5),
-                    nn.Conv1d(
-                        nar_d_model, nar_d_model, kernel_size=5, padding="same"
-                    ),
+                    nn.Conv1d(nar_d_model, nar_d_model, kernel_size=5, padding="same"),
                     nn.BatchNorm1d(nar_d_model),
                     nn.ReLU(),
                     nn.Dropout(0.5),
@@ -232,9 +225,7 @@ class VALLF(nn.Module):
                     adaptive_layer_norm=True,
                 ),
                 num_layers=int(num_layers * nar_scale_factor),
-                norm=AdaptiveLayerNorm(
-                    nar_d_model, norm=nn.LayerNorm(nar_d_model)
-                )
+                norm=AdaptiveLayerNorm(nar_d_model, norm=nn.LayerNorm(nar_d_model))
                 if norm_first
                 else None,
             )
@@ -245,10 +236,7 @@ class VALLF(nn.Module):
                 ]
             )
             self.nar_stage_embeddings = nn.ModuleList(
-                [
-                    TokenEmbedding(nar_d_model, 1)
-                    for i in range(num_quantizers - 1)
-                ]
+                [TokenEmbedding(nar_d_model, 1) for i in range(num_quantizers - 1)]
             )
 
             if share_embedding:
@@ -259,9 +247,9 @@ class VALLF(nn.Module):
                 # We also share the parameters of the acoustic embedding layer and the output prediction layer,
                 # which means the weights of the j-th prediction layer are the same as the (j + 1)-th acoustic embedding layer.
                 for j in range(0, num_quantizers - 2):
-                    self.nar_predict_layers[
-                        j
-                    ].weight = self.nar_audio_embeddings[j + 2].weight
+                    self.nar_predict_layers[j].weight = self.nar_audio_embeddings[
+                        j + 2
+                    ].weight
 
     def stage_parameters(self, stage: int = 1) -> Iterator[nn.Parameter]:
         assert stage > 0
@@ -304,7 +292,9 @@ class VALLF(nn.Module):
 
         return targets[:, :-1], targets[:, 1:]
 
-    def _prepare_prompts(self, y, y_lens, codes, nar_stage, y_prompts_codes, prefix_mode):
+    def _prepare_prompts(
+        self, y, y_lens, codes, nar_stage, y_prompts_codes, prefix_mode
+    ):
         # 5.1 For the NAR acoustic prompt tokens, we select a random segment waveform of 3 seconds
         # from the same utterance.
         # We implement this differently.
@@ -324,13 +314,9 @@ class VALLF(nn.Module):
             y_prompts = self.nar_audio_embeddings[0](y[:, :prefix_len])
             y_emb = self.nar_audio_embeddings[0](y[:, prefix_len:])
             for j in range(1, self.num_quantizers):
-                y_prompts += self.nar_audio_embeddings[j](
-                    codes[:, :prefix_len, j]
-                )
+                y_prompts += self.nar_audio_embeddings[j](codes[:, :prefix_len, j])
                 if j < nar_stage:
-                    y_emb += self.nar_audio_embeddings[j](
-                        codes[:, prefix_len:, j]
-                    )
+                    y_emb += self.nar_audio_embeddings[j](codes[:, prefix_len:, j])
             y_emb = torch.concat([y_prompts, y_emb], axis=1)
         elif prefix_mode in [2, 4]:
             if prefix_mode == 2:
@@ -343,9 +329,7 @@ class VALLF(nn.Module):
                     y_prompts_codes.append(
                         torch.clone(codes[b, start : start + prefix_len])
                     )
-                    codes[
-                        b, start : start + prefix_len, nar_stage
-                    ] = NUM_AUDIO_TOKENS
+                    codes[b, start : start + prefix_len, nar_stage] = NUM_AUDIO_TOKENS
                 y_prompts_codes = torch.stack(y_prompts_codes, dim=0)
             else:
                 prefix_len = y_prompts_codes.shape[1]
@@ -353,9 +337,7 @@ class VALLF(nn.Module):
             y_prompts = self.nar_audio_embeddings[0](y_prompts_codes[..., 0])
             y_emb = self.nar_audio_embeddings[0](y)
             for j in range(1, self.num_quantizers):
-                y_prompts += self.nar_audio_embeddings[j](
-                    y_prompts_codes[..., j]
-                )
+                y_prompts += self.nar_audio_embeddings[j](y_prompts_codes[..., j])
                 if j < nar_stage:
                     y_emb += self.nar_audio_embeddings[j](codes[..., j])
             y_emb = torch.concat([y_prompts, y_emb], axis=1)
@@ -437,9 +419,9 @@ class VALLE(VALLF):
             **kwargs,
         )
         self.language_ID = {
-            'en': 0,
-            'zh': 1,
-            'ja': 2,
+            "en": 0,
+            "zh": 1,
+            "ja": 2,
         }
         self.ar_language_embedding = TokenEmbedding(d_model, len(self.language_ID))
         self.nar_language_embedding = TokenEmbedding(d_model, len(self.language_ID))
@@ -455,6 +437,7 @@ class VALLE(VALLF):
         **kwargs,
     ):
         raise NotImplementedError
+
     def inference(
         self,
         x: torch.Tensor,
@@ -496,11 +479,17 @@ class VALLE(VALLF):
         text = x
         x = self.ar_text_embedding(text)
         # Add language embedding
-        prompt_language_id = torch.LongTensor(np.array([self.language_ID[prompt_language]])).to(x.device)
+        prompt_language_id = torch.LongTensor(
+            np.array([self.language_ID[prompt_language]])
+        ).to(x.device)
         if isinstance(text_language, str):
-            text_language_id = torch.LongTensor(np.array([self.language_ID[text_language]])).to(x.device)
+            text_language_id = torch.LongTensor(
+                np.array([self.language_ID[text_language]])
+            ).to(x.device)
         elif isinstance(text_language, List):
-            text_language_id = torch.LongTensor(np.array([self.language_ID[tl] for tl in text_language])).to(x.device)
+            text_language_id = torch.LongTensor(
+                np.array([self.language_ID[tl] for tl in text_language])
+            ).to(x.device)
         x[:, :enroll_x_lens, :] += self.ar_language_embedding(prompt_language_id)
         x[:, enroll_x_lens:, :] += self.ar_language_embedding(text_language_id)
         x = self.ar_text_prenet(x)
@@ -522,7 +511,9 @@ class VALLE(VALLF):
         kv_cache = None
         use_kv_caching = True
 
-        sum_logprobs = torch.zeros(best_of, device=y.device)  # implement batch decoding here
+        sum_logprobs = torch.zeros(
+            best_of, device=y.device
+        )  # implement batch decoding here
         x = x.repeat(best_of, 1, 1)
         y = y.repeat(best_of, 1)
         while True:
@@ -538,16 +529,13 @@ class VALLE(VALLF):
                 value=True,
             )
             y_attn_mask = F.pad(
-                torch.triu(
-                    torch.ones(y_len, y_len, dtype=torch.bool), diagonal=1
-                ),
+                torch.triu(torch.ones(y_len, y_len, dtype=torch.bool), diagonal=1),
                 (x_len, 0),
                 value=False,
             )
-            xy_attn_mask = torch.concat(
-                [x_attn_mask_pad, y_attn_mask], dim=0
-            ).to(y.device)
-
+            xy_attn_mask = torch.concat([x_attn_mask_pad, y_attn_mask], dim=0).to(
+                y.device
+            )
 
             if use_kv_caching and kv_cache is not None:
                 xy_pos = xy_pos[:, [-1]]
@@ -572,16 +560,11 @@ class VALLE(VALLF):
             sum_logprobs += current_logprobs * (y[:, -1] != NUM_AUDIO_TOKENS)
             samples[y[:, -1] == NUM_AUDIO_TOKENS] = NUM_AUDIO_TOKENS
             completed = (samples[:, -1] == NUM_AUDIO_TOKENS).all()
-            if (
-                completed
-                or (y.shape[1] - prompts.shape[1]) > x_lens.max() * 16
-            ):
+            if completed or (y.shape[1] - prompts.shape[1]) > x_lens.max() * 16:
                 if prompts.shape[1] == y.shape[1]:
-                    raise SyntaxError(
-                        "well trained model shouldn't reach here."
-                    )
+                    raise SyntaxError("well trained model shouldn't reach here.")
                 lengths = torch.sum(y != NUM_AUDIO_TOKENS, dim=1)
-                avg_logprobs = sum_logprobs / lengths ** length_penalty
+                avg_logprobs = sum_logprobs / lengths**length_penalty
                 # choose the best beam according to sum_logprobs
                 best_beam = y[torch.argmax(avg_logprobs), :]
                 worst_beam = y[torch.argmin(avg_logprobs), :]
@@ -602,9 +585,7 @@ class VALLE(VALLF):
             return torch.stack(codes, dim=-1)
 
         # Non-AR Decoders
-        y_emb = self.nar_audio_embeddings[0](
-            y[:, int(self.ar_audio_prepend_bos) :]
-        )
+        y_emb = self.nar_audio_embeddings[0](y[:, int(self.ar_audio_prepend_bos) :])
 
         if self.prefix_mode in [2, 4]:  # Exclude enrolled_phonemes
             enrolled_len = enroll_x_lens.max().item()
@@ -621,11 +602,17 @@ class VALLE(VALLF):
 
         x = self.nar_text_embedding(text)
         # Add language embedding
-        prompt_language_id = torch.LongTensor(np.array([self.language_ID[prompt_language]])).to(x.device)
+        prompt_language_id = torch.LongTensor(
+            np.array([self.language_ID[prompt_language]])
+        ).to(x.device)
         if isinstance(text_language, str):
-            text_language_id = torch.LongTensor(np.array([self.language_ID[text_language]])).to(x.device)
+            text_language_id = torch.LongTensor(
+                np.array([self.language_ID[text_language]])
+            ).to(x.device)
         elif isinstance(text_language, List):
-            text_language_id = torch.LongTensor(np.array([self.language_ID[tl] for tl in text_language])).to(x.device)
+            text_language_id = torch.LongTensor(
+                np.array([self.language_ID[tl] for tl in text_language])
+            ).to(x.device)
         x[:, :enroll_x_lens, :] += self.nar_language_embedding(prompt_language_id)
         x[:, enroll_x_lens:, :] += self.nar_language_embedding(text_language_id)
         x = self.nar_text_prenet(x)
@@ -651,15 +638,11 @@ class VALLE(VALLF):
                 codes.append(samples)
 
                 if i < self.num_quantizers - 2:
-                    y_emb[:, :prefix_len] += embedding_layer(
-                        prompts[..., i + 1]
-                    )
+                    y_emb[:, :prefix_len] += embedding_layer(prompts[..., i + 1])
                     y_emb[:, prefix_len:] += embedding_layer(samples)
         else:
             for j in range(1, self.num_quantizers):
-                y_emb[:, :prefix_len] += self.nar_audio_embeddings[j](
-                    prompts[..., j]
-                )
+                y_emb[:, :prefix_len] += self.nar_audio_embeddings[j](prompts[..., j])
 
             for i, (predict_layer, embedding_layer) in enumerate(
                 zip(
@@ -752,15 +735,11 @@ class VALLE(VALLF):
                 codes.append(samples)
 
                 if i < 6:
-                    y_emb[:, :prefix_len] += embedding_layer(
-                        prompts[..., i + 1]
-                    )
+                    y_emb[:, :prefix_len] += embedding_layer(prompts[..., i + 1])
                     y_emb[:, prefix_len:] += embedding_layer(samples)
         else:
             for j in range(1, 8):
-                y_emb[:, :prefix_len] += self.nar_audio_embeddings[j](
-                    prompts[..., j]
-                )
+                y_emb[:, :prefix_len] += self.nar_audio_embeddings[j](prompts[..., j])
 
             for i, (predict_layer, embedding_layer) in enumerate(
                 zip(
@@ -801,18 +780,14 @@ def top_k_top_p_filtering(
     From: https://gist.github.com/thomwolf/1a5a29f6962089e871b94cbd09daf317
     """
     if top_k > 0:
-        top_k = min(
-            max(top_k, min_tokens_to_keep), logits.size(-1)
-        )  # Safety check
+        top_k = min(max(top_k, min_tokens_to_keep), logits.size(-1))  # Safety check
         # Remove all tokens with a probability less than the last token of the top-k
         indices_to_remove = logits < torch.topk(logits, top_k)[0][..., -1, None]
         logits[indices_to_remove] = filter_value
 
     if top_p < 1.0:
         sorted_logits, sorted_indices = torch.sort(logits, descending=True)
-        cumulative_probs = torch.cumsum(
-            F.softmax(sorted_logits, dim=-1), dim=-1
-        )
+        cumulative_probs = torch.cumsum(F.softmax(sorted_logits, dim=-1), dim=-1)
 
         # Remove tokens with cumulative probability above the threshold (token with 0 are kept)
         sorted_indices_to_remove = cumulative_probs > top_p
@@ -820,9 +795,7 @@ def top_k_top_p_filtering(
             # Keep at least min_tokens_to_keep (set to min_tokens_to_keep-1 because we add the first one below)
             sorted_indices_to_remove[..., :min_tokens_to_keep] = 0
         # Shift the indices to the right to keep also the first token above the threshold
-        sorted_indices_to_remove[..., 1:] = sorted_indices_to_remove[
-            ..., :-1
-        ].clone()
+        sorted_indices_to_remove[..., 1:] = sorted_indices_to_remove[..., :-1].clone()
         sorted_indices_to_remove[..., 0] = 0
 
         # scatter sorted tensors to original indexing

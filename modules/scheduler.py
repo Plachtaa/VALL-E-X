@@ -22,9 +22,7 @@ from modules.optim import Eden
 
 
 def calc_lr(step, dim_embed, warmup_steps):
-    return dim_embed ** (-0.5) * min(
-        step ** (-0.5), step * warmup_steps ** (-1.5)
-    )
+    return dim_embed ** (-0.5) * min(step ** (-0.5), step * warmup_steps ** (-1.5))
 
 
 class NoamScheduler(torch.optim.lr_scheduler._LRScheduler):
@@ -37,7 +35,6 @@ class NoamScheduler(torch.optim.lr_scheduler._LRScheduler):
         last_epoch: int = -1,
         verbose: bool = False,
     ) -> None:
-
         self.dim_embed = dim_embed
         self.base_lr = base_lr
         self.warmup_steps = warmup_steps
@@ -46,9 +43,7 @@ class NoamScheduler(torch.optim.lr_scheduler._LRScheduler):
         super().__init__(optimizer, last_epoch, verbose)
 
     def get_lr(self) -> float:
-        lr = self.base_lr * calc_lr(
-            self._step_count, self.dim_embed, self.warmup_steps
-        )
+        lr = self.base_lr * calc_lr(self._step_count, self.dim_embed, self.warmup_steps)
         return [lr] * self.num_param_groups
 
     def set_step(self, step: int):

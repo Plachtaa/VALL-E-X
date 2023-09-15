@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+
 # from icefall.utils import make_pad_mask
 
 from .symbol_table import SymbolTable
