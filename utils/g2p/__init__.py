@@ -1,6 +1,6 @@
 """ from https://github.com/keithito/tacotron """
-from utils.g2p.symbols import symbols
 import utils.g2p.cleaners as cleaners
+from utils.g2p.symbols import symbols
 from tokenizers import Tokenizer
 
 # Mappings from symbol to numeric ID and vice versa:
