@@ -37,7 +37,7 @@ VALL-E X 是一个强大而创新的多语言文本转语音（TTS）模型，�
 - 预训练模型权重已发布，从[这里](https://drive.google.com/file/d/10gdQWvP-K_e1undkvv0p2b7SU6I4Egyl/view?usp=sharing)下载。
 
 ## 💻 本地安装
-### 使用pip安装，推荐使用Python 3.10，CUDA 11.7 ~ 12.0，PyTorch 2.0+
+### 使用pip安装，必须使用Python 3.10，CUDA 11.7 ~ 12.0，PyTorch 2.0+
 ```commandline
 git clone https://github.com/Plachtaa/VALL-E-X.git
 cd VALL-E-X
