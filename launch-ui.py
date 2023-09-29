@@ -65,7 +65,8 @@ text_collater = get_text_token_collater()
 device = torch.device("cpu")
 if torch.cuda.is_available():
     device = torch.device("cuda", 0)
-
+if torch.backends.mps.is_available():
+    device = torch.device("mps")
 # VALL-E-X model
 if not os.path.exists("./checkpoints/"): os.mkdir("./checkpoints/")
 if not os.path.exists(os.path.join("./checkpoints/", "vallex-checkpoint.pt")):
