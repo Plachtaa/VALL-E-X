@@ -22,7 +22,8 @@ text_collater = get_text_token_collater()
 device = torch.device("cpu")
 if torch.cuda.is_available():
     device = torch.device("cuda", 0)
-
+if torch.backends.mps.is_available():
+    device = torch.device("mps")
 codec = AudioTokenizer(device)
 
 if not os.path.exists("./whisper/"): os.mkdir("./whisper/")

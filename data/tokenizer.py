@@ -76,6 +76,8 @@ class AudioTokenizer:
             device = torch.device("cpu")
             if torch.cuda.is_available():
                 device = torch.device("cuda:0")
+            if torch.backends.mps.is_available():
+                device = torch.device("mps")
 
         self._device = device
 
