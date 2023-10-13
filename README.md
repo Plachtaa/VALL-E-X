@@ -14,7 +14,8 @@ VALL-E X is an amazing multilingual text-to-speech (TTS) model proposed by Micro
 More details about the model are presented in [model card](./model-card.md).
 
 # NEW!
-Install as a library using `pip install git+https://github.com/korakoe/VALL-E-X.git`
+Install as a library using:
+```pip install git+https://github.com/korakoe/VALL-E-X.git```
 
 ## 📖 Quick Index
 * [🚀 Updates](#-updates)
