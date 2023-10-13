@@ -5,7 +5,7 @@
 <br>
 微软[VALL-E X](https://arxiv.org/pdf/2303.03926) 零样本语音合成模型的开源实现.<br>
 **预训练模型现已向公众开放，供研究或应用使用。**
-![vallex-framework](/images/vallex_framework.jpg "VALL-E X framework")
+![vallex-framework](/vallex/images/vallex_framework.jpg "VALL-E X framework")
 
 VALL-E X 是一个强大而创新的多语言文本转语音（TTS）模型，最初由微软发布。虽然微软最初在他们的研究论文中提出了该概念，但并未发布任何代码或预训练模型。我们认识到了这项技术的潜力和价值，复现并训练了一个开源可用的VALL-E X模型。我们很乐意与社区分享我们的预训练模型，让每个人都能体验到次世代TTS的威力。 🎧
 <br>
@@ -148,7 +148,7 @@ https://github.com/Plachtaa/VALL-E-X/assets/112609742/699c47a3-d502-4801-8364-bd
   <summary><h3>🪑 基本使用</h3></summary>
 
 ```python
-from utils.generation import SAMPLE_RATE, generate_audio, preload_models
+from vallex.utils import SAMPLE_RATE, generate_audio, preload_models
 from scipy.io.wavfile import write as write_wav
 from IPython.display import Audio
 
@@ -204,7 +204,7 @@ audio_array = generate_audio(text_prompt, language='mix')
 <details open>
 <summary><h3>📼 预设音色</h3></summary>
   
-我们提供十几种说话人音色可直接VALL-E X使用! 在[这里](/presets)浏览所有可用音色。
+我们提供十几种说话人音色可直接VALL-E X使用! 在[这里](/vallex/presets)浏览所有可用音色。
 
 > VALL-E X 尝试匹配给定预设音色的音调、音高、情感和韵律。该模型还尝试保留音乐、环境噪声等。
 ```python
@@ -227,18 +227,19 @@ VALL-E X 支持声音克隆！你可以使用任何人，角色，甚至是你�
 > VALL-E X 尝试匹配给定音频提示的音调、音高、情感和韵律。该模型还尝试保留音乐、环境噪声等。
 
 ```python
-from utils.prompt_making import make_prompt
+from vallex.utils import make_prompt
 
 ### Use given transcript
 make_prompt(name="paimon", audio_prompt_path="paimon_prompt.wav",
-                transcript="Just, what was that? Paimon thought we were gonna get eaten.")
+            transcript="Just, what was that? Paimon thought we were gonna get eaten.")
 
 ### Alternatively, use whisper
 make_prompt(name="paimon", audio_prompt_path="paimon_prompt.wav")
 ```
 来尝试一下刚刚做好的音频提示吧！
+
 ```python
-from utils.generation import SAMPLE_RATE, generate_audio, preload_models
+from vallex.utils import SAMPLE_RATE, generate_audio, preload_models
 from scipy.io.wavfile import write as write_wav
 
 # download and load all models

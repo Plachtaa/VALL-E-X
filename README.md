@@ -6,7 +6,7 @@ English | [中文](README-ZH.md)
 An open source implementation of Microsoft's [VALL-E X](https://arxiv.org/pdf/2303.03926) zero-shot TTS model.<br>
 **We release our trained model to the public for research or application usage.**
 
-![vallex-framework](/images/vallex_framework.jpg "VALL-E X framework")
+![vallex-framework](/vallex/images/vallex_framework.jpg "VALL-E X framework")
 
 VALL-E X is an amazing multilingual text-to-speech (TTS) model proposed by Microsoft. While Microsoft initially publish in their research paper, they did not release any code or pretrained models. Recognizing the potential and value of this technology, our team took on the challenge to reproduce the results and train our own model. We are glad to share our trained VALL-E X model with the community, allowing everyone to experience the power next-generation TTS! 🎧
 <br>
@@ -154,11 +154,11 @@ Explore our [demo page](https://plachtaa.github.io/) for a lot more examples!
   <summary><h3>🪑 Basics</h3></summary>
 
 ```python
-from utils.generation import SAMPLE_RATE, generate_audio, preload_models
+from vallex.utils.generation import SAMPLE_RATE, generate_audio, preload_models
 from scipy.io.wavfile import write as write_wav
 from IPython.display import Audio
 
-# download and load all models
+# download and load all models 
 preload_models()
 
 # generate audio from text
@@ -210,7 +210,7 @@ audio_array = generate_audio(text_prompt, language='mix')
 <details open>
 <summary><h3>📼 Voice Presets</h3></summary>
   
-VALL-E X provides tens of speaker voices which you can directly used for inference! Browse all voices in the [code](/presets)
+VALL-E X provides tens of speaker voices which you can directly used for inference! Browse all voices in the [code](/vallex/presets)
 
 > VALL-E X tries to match the tone, pitch, emotion and prosody of a given preset. The model also attempts to preserve music, ambient noise, etc.
 
@@ -234,21 +234,22 @@ You can also leave the transcript blank to let the [Whisper](https://github.com/
 > VALL-E X tries to match the tone, pitch, emotion and prosody of a given prompt. The model also attempts to preserve music, ambient noise, etc.
 
 ```python
-from utils.prompt_making import make_prompt
+from vallex.utils.prompt_making import make_prompt
 
 ### Use given transcript
 make_prompt(name="paimon", audio_prompt_path="paimon_prompt.wav",
-                transcript="Just, what was that? Paimon thought we were gonna get eaten.")
+            transcript="Just, what was that? Paimon thought we were gonna get eaten.")
 
 ### Alternatively, use whisper
 make_prompt(name="paimon", audio_prompt_path="paimon_prompt.wav")
 ```
 Now let's try out the prompt we've just made!
+
 ```python
-from utils.generation import SAMPLE_RATE, generate_audio, preload_models
+from vallex.utils.generation import SAMPLE_RATE, generate_audio, preload_models
 from scipy.io.wavfile import write as write_wav
 
-# download and load all models
+# download and load all models 
 preload_models()
 
 text_prompt = """

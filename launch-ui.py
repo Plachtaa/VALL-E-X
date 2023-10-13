@@ -1,5 +1,4 @@
 # coding: utf-8
-import argparse
 import logging
 import os
 import pathlib
@@ -25,21 +24,20 @@ import langid
 langid.set_languages(['en', 'zh', 'ja'])
 
 import nltk
-nltk.data.path = nltk.data.path + [os.path.join(os.getcwd(), "nltk_data")]
+nltk.data.path = nltk.data.path + [os.path.join(os.getcwd(), "vallex/nltk_data")]
 
 import torch
 import torchaudio
-import random
 
 import numpy as np
 
-from data.tokenizer import (
+from vallex.data import (
     AudioTokenizer,
     tokenize_audio,
 )
-from data.collation import get_text_token_collater
-from models.vallex import VALLE
-from utils.g2p import PhonemeBpeTokenizer
+from vallex.data import get_text_token_collater
+from vallex.models.vallex import VALLE
+from vallex.utils.g2p import PhonemeBpeTokenizer
 from descriptions import *
 from macros import *
 from examples import *
@@ -59,7 +57,7 @@ torch._C._jit_set_profiling_executor(False)
 torch._C._jit_set_profiling_mode(False)
 torch._C._set_graph_executor_optimize(False)
 
-text_tokenizer = PhonemeBpeTokenizer(tokenizer_path="./utils/g2p/bpe_69.json")
+text_tokenizer = PhonemeBpeTokenizer(tokenizer_path="vallex/utils/g2p/bpe_69.json")
 text_collater = get_text_token_collater()
 
 device = torch.device("cpu")
@@ -68,8 +66,8 @@ if torch.cuda.is_available():
 if torch.backends.mps.is_available():
     device = torch.device("mps")
 # VALL-E-X model
-if not os.path.exists("./checkpoints/"): os.mkdir("./checkpoints/")
-if not os.path.exists(os.path.join("./checkpoints/", "vallex-checkpoint.pt")):
+if not os.path.exists("vallex/checkpoints/"): os.mkdir("vallex/checkpoints/")
+if not os.path.exists(os.path.join("vallex/checkpoints/", "vallex-checkpoint.pt")):
     import wget
     try:
         logging.info("Downloading model from https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt ...")
@@ -94,7 +92,7 @@ model = VALLE(
         prepend_bos=True,
         num_quantizers=NUM_QUANTIZERS,
     )
-checkpoint = torch.load("./checkpoints/vallex-checkpoint.pt", map_location='cpu')
+checkpoint = torch.load("vallex/checkpoints/vallex-checkpoint.pt", map_location='cpu')
 missing_keys, unexpected_keys = model.load_state_dict(
     checkpoint["model"], strict=True
 )
@@ -108,9 +106,9 @@ audio_tokenizer = AudioTokenizer(device)
 vocos = Vocos.from_pretrained('charactr/vocos-encodec-24khz').to(device)
 
 # ASR
-if not os.path.exists("./whisper/"): os.mkdir("./whisper/")
+if not os.path.exists("vallex/whisper/"): os.mkdir("vallex/whisper/")
 try:
-    whisper_model = whisper.load_model("medium",download_root=os.path.join(os.getcwd(), "whisper")).cpu()
+    whisper_model = whisper.load_model("medium", download_root=os.path.join(os.getcwd(), "vallex/whisper")).cpu()
 except Exception as e:
     logging.info(e)
     raise Exception(
@@ -119,7 +117,7 @@ except Exception as e:
         "\n manually download model and put it to {} .".format(os.getcwd() + "\whisper"))
 
 # Voice Presets
-preset_list = os.walk("./presets/").__next__()[2]
+preset_list = os.walk("vallex/presets/").__next__()[2]
 preset_list = [preset[:-4] for preset in preset_list if preset.endswith(".npz")]
 
 def clear_prompts():
@@ -213,14 +211,14 @@ def make_prompt(name, wav, sr, save=True):
         wav = wav.unsqueeze(0)
     assert wav.ndim and wav.size(0) == 1
     torchaudio.save(f"./prompts/{name}.wav", wav, sr)
-    lang, text = transcribe_one(whisper_model, f"./prompts/{name}.wav")
+    lang, text = transcribe_one(whisper_model, f"vallex/prompts/{name}.wav")
     lang_token = lang2token[lang]
     text = lang_token + text + lang_token
-    with open(f"./prompts/{name}.txt", 'w', encoding='utf-8') as f:
+    with open(f"vallex/prompts/{name}.txt", 'w', encoding='utf-8') as f:
         f.write(text)
     if not save:
-        os.remove(f"./prompts/{name}.wav")
-        os.remove(f"./prompts/{name}.txt")
+        os.remove(f"vallex/prompts/{name}.wav")
+        os.remove(f"vallex/prompts/{name}.txt")
 
     whisper_model.cpu()
     torch.cuda.empty_cache()
@@ -321,7 +319,7 @@ def infer_from_prompt(text, language, accent, preset_prompt, prompt_file):
     if prompt_file is not None:
         prompt_data = np.load(prompt_file.name)
     else:
-        prompt_data = np.load(os.path.join("./presets/", f"{preset_prompt}.npz"))
+        prompt_data = np.load(os.path.join("vallex/presets/", f"{preset_prompt}.npz"))
     audio_prompts = prompt_data['audio_tokens']
     text_prompts = prompt_data['text_tokens']
     lang_pr = prompt_data['lang_code']
@@ -366,7 +364,7 @@ def infer_from_prompt(text, language, accent, preset_prompt, prompt_file):
     return message, (24000, samples.squeeze(0).cpu().numpy())
 
 
-from utils.sentence_cutter import split_text_into_sentences
+from vallex.utils.sentence_cutter import split_text_into_sentences
 @torch.no_grad()
 def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='no-accent'):
     """
@@ -399,7 +397,7 @@ def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='n
         audio_prompts = torch.tensor(audio_prompts).type(torch.int32).to(device)
         text_prompts = torch.tensor(text_prompts).type(torch.int32)
     elif preset_prompt is not None and preset_prompt != "":
-        prompt_data = np.load(os.path.join("./presets/", f"{preset_prompt}.npz"))
+        prompt_data = np.load(os.path.join("vallex/presets/", f"{preset_prompt}.npz"))
         audio_prompts = prompt_data['audio_tokens']
         text_prompts = prompt_data['text_tokens']
         lang_pr = prompt_data['lang_code']

@@ -1,0 +1,14 @@
+
+.idea/vcs.xml
+.idea/VALL-E-X.iml
+.idea/modules.xml
+.idea/misc.xml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/discord.xml
+/build/
+/VALL_E_X.egg-info/
+/checkpoints/
+/utils/
+/whisper/
+nltk_data/tokenizers/punkt/.DS_Store
