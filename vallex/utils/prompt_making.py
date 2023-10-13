@@ -78,6 +78,8 @@ def make_prompt(name, audio_prompt_path, transcript=None):
 
     message = f"Detected language: {lang_pr}\n Detected text {text_pr}\n"
 
+    os.makedirs("./customs/", exist_ok=True)
+
     # save as npz file
     save_path = os.path.join("./customs/", f"{name}.npz")
     np.savez(save_path, audio_tokens=audio_tokens, text_tokens=text_tokens, lang_code=lang2code[lang_pr])

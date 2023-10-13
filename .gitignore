@@ -12,3 +12,4 @@
 /utils/
 /whisper/
 nltk_data/tokenizers/punkt/.DS_Store
+/customs/
