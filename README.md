@@ -15,7 +15,9 @@ More details about the model are presented in [model card](./model-card.md).
 
 # NEW!
 Install as a library using:
-```pip install git+https://github.com/korakoe/VALL-E-X.git```
+```sh
+pip install git+https://github.com/korakoe/VALL-E-X.git
+```
 
 ## 📖 Quick Index
 * [🚀 Updates](#-updates)
