@@ -309,6 +309,9 @@ Comparing to [Bark](https://github.com/suno-ai/bark):
 
 ## ❓ FAQ
 
+#### Where is code for training?
+* [lifeiteng's vall-e](https://github.com/lifeiteng/vall-e) has almost everything. There is no plan to release our training code because there is no difference between lifeiteng's implementation.
+
 #### Where can I download the model checkpoint?
 * We use `wget` to download the model to directory `./checkpoints/` when you run the program for the first time.
 * If the download fails on the first run, please manually download from [this link](https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt), and put the file under directory `./checkpoints/`.
