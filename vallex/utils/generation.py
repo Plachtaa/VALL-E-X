@@ -28,7 +28,7 @@ from vallex.models.vallex import VALLE
 from vallex.utils.g2p import PhonemeBpeTokenizer
 from vallex.utils.sentence_cutter import split_text_into_sentences
 
-from macros import *
+from vallex.utils.macros import *
 
 device = torch.device("cpu")
 if torch.cuda.is_available():
