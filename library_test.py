@@ -11,5 +11,8 @@ model, codec, vocos = preload_models()
 while True:
     audio_array = generate_audio(model, codec, vocos, input("what to say: "))
     write_wav("test.wav", SAMPLE_RATE, audio_array)
-    playsound('test.wav')
+    try:
+        playsound('test.wav')
+    except:
+        print("Failed to play")
 
