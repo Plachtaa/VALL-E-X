@@ -62,9 +62,12 @@ if not os.path.exists("./utils/g2p/bpe_69.json"):
 text_tokenizer = PhonemeBpeTokenizer(tokenizer_path="./utils/g2p/bpe_69.json")
 text_collater = get_text_token_collater()
 
-def preload_models():
-    global model, codec, vocos
+def preload_models(map=None):
+    global device
     print("Loading models...")
+
+    if map is not None:
+        device = torch.device(map)
 
     # VALL-E
     model = VALLE(
@@ -94,11 +97,7 @@ def preload_models():
     return model, codec, vocos
 
 @torch.no_grad()
-def generate_audio(text, prompt=None, language='auto', accent='no-accent', preloaded=None):
-    global model, codec, vocos, text_tokenizer, text_collater
-
-    if preloaded is not None:
-        model, codec, vocos = preloaded
+def generate_audio(model, codec, vocos, text, prompt=None, language='auto', accent='no-accent'):
 
     text = text.replace("\n", "").strip(" ")
     # detect language

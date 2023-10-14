@@ -29,6 +29,11 @@ pip install git+https://github.com/korakoe/VALL-E-X.git
 * [🧠 TODO](#-todo)
 
 ## 🚀 Updates
+**2023.10.14**
+- Use better practice for loading models (by extension allowing loading of custom models | undocumented)
+- Allow for mapping to other devices
+- Fix numerous other issues...
+
 **2023.10.13**
 - Turned into installable library
 
@@ -168,13 +173,13 @@ from scipy.io.wavfile import write as write_wav
 from IPython.display import Audio
 
 # download and load all models 
-preload_models()
+model, codec, vocos = preload_models()
 
 # generate audio from text
 text_prompt = """
 Hello, my name is Nose. And uh, and I like hamburger. Hahaha... But I also have other interests such as playing tactic toast.
 """
-audio_array = generate_audio(text_prompt)
+audio_array = generate_audio(model, codec, vocos, text_prompt)
 
 # save audio to disk
 write_wav("vallex_generation.wav", SAMPLE_RATE, audio_array)
@@ -259,12 +264,12 @@ from vallex.utils.generation import SAMPLE_RATE, generate_audio, preload_models
 from scipy.io.wavfile import write as write_wav
 
 # download and load all models 
-preload_models()
+model, codec, vocos = preload_models()
 
 text_prompt = """
 Hey, Traveler, Listen to this, This machine has taken my voice, and now it can talk just like me!
 """
-audio_array = generate_audio(text_prompt, prompt="paimon")
+audio_array = generate_audio(model, codec, vocos, text_prompt, prompt="paimon")
 
 write_wav("paimon_cloned.wav", SAMPLE_RATE, audio_array)
 
