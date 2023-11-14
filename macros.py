@@ -4,7 +4,7 @@ N_DIM = 1024
 PREFIX_MODE = 1
 NUM_QUANTIZERS = 8
 SAMPLE_RATE = 24000
-
+#updated
 lang2token = {
     'zh': "[ZH]",
     'ja': "[JA]",
