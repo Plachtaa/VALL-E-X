@@ -4,7 +4,7 @@ import torchaudio
 import logging
 import langid
 import whisper
-langid.set_languages(['en', 'zh', 'ja'])
+langid.set_languages(['en', 'zh', 'ja','ar'])
 
 import numpy as np
 from data.tokenizer import (

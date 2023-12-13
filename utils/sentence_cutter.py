@@ -2,13 +2,18 @@ import nltk
 import jieba
 import sudachipy
 import langid
-langid.set_languages(['en', 'zh', 'ja'])
+nltk.download('punkt')
+langid.set_languages(['en', 'zh', 'ja','ar'])
 
 def split_text_into_sentences(text):
     if langid.classify(text)[0] == "en":
         sentences = nltk.tokenize.sent_tokenize(text)
-
+  
         return sentences
+    elif langid.classify(text)[0] == "ar":
+         sentences = nltk.tokenize.sent_tokenize(text)
+         return sentences
+     
     elif langid.classify(text)[0] == "zh":
         sentences = []
         segs = jieba.cut(text, cut_all=False)
@@ -43,6 +48,9 @@ def split_text_into_sentences(text):
 
 long_text = """
 This is a very long paragraph, so most TTS model is unable to handle it. Hence, we have to split it into several sentences. With the help of NLTK, we can split it into sentences. However, the punctuation is not preserved, so we have to add it back. How are we going to do write this code? Let's see. 
+"""
+long_text = """
+هذه فقرة طويلة جدًا، لذا فإن معظم نماذج تحويل النص الى صوت غير قادرة على التعامل معها .ولذلك، علينا أن نقسمها الى عدة جمل . و بمساعدة مكتبة نلتك ، يمكننا تقسيمها الى جمل  . ومع ذلك ، لم يتم الحفاظ على علامات الترقيم ، لذا يجب علينا اضافتها مرة اخرى . كيف سنقوم بكتابة هذا الكود ؟ دعنا نرى .   
 """
 
 long_text = """
