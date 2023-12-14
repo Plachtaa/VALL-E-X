@@ -6,6 +6,7 @@
 # https://creativecommons.org/licenses/by-nc/4.0/
 
 import re
+from string import punctuation
 
 arabic_to_buckw_dict = {  # mapping from Arabic script to Buckwalter
     u'\u0628': u'b', u'\u0630': u'*', u'\u0637': u'T', u'\u0645': u'm',
@@ -129,7 +130,7 @@ fixedWords = {
 }
 
 
-def isFixedWord(word, results, orthography, pronunciations):
+def isFixedWord(word, results,pronunciations):
     lastLetter = ''
     if(len(word) > 0):
         lastLetter = word[-1]
@@ -159,8 +160,82 @@ def isFixedWord(word, results, orthography, pronunciations):
     return results
 
 
+#====================== arabic cleaners ===================#
+def remove_diacritics(text: str) -> str:
+    # https://unicode-table.com/en/blocks/arabic/
+    return re.sub(r"[\u064B-\u0652\u06D4\u0670\u0674\u06D5-\u06ED]+", "", text)
+
+def remove_punctuations(text: str) -> str:
+    """This function  removes all punctuations except the verbatim"""
+
+    arabic_punctuations = """﴿﴾`÷×؛<>_()*&^%][ـ،/:"؟.,'{}~¦+|!”…“–ـ"""
+    english_punctuations = punctuation
+    # remove all non verbatim punctuations
+    all_punctuations = set(arabic_punctuations + english_punctuations)
+
+    for p in all_punctuations:
+        if p in text:
+            text = text.replace(p, " ")
+    return text
+
+def remove_non_alphanumeric(text: str) -> str:
+    text = text.lower()
+    return re.sub(r"[^\u0600-\u06FF\s\da-z]+", "", text)
+
+def remove_single_char_word(text: str) -> str:
+    """
+    Remove single character word from text
+    Example: I am in a a home for two years => am in home for two years
+    Args:
+            text (str): text
+    Returns:
+            (str): text with single char removed
+    """
+    words = text.split()
+
+    filter_words = [word for word in words if len(word) > 1 or word.isnumeric()]
+    return " ".join(filter_words)
+
+
+def east_to_west_num(text: str) -> str:
+    eastern_to_western = {
+        "٠": "0",
+        "١": "1",
+        "٢": "2",
+        "٣": "3",
+        "٤": "4",
+        "٥": "5",
+        "٦": "6",
+        "٧": "7",
+        "٨": "8",
+        "٩": "9",
+        "٪": "%",
+        "_": " ",
+        "ڤ": "ف",
+        "|": " ",
+    }
+    trans_string = str.maketrans(eastern_to_western)
+    return text.translate(trans_string)
+
+def remove_extra_space(text: str) -> str:
+    text = re.sub(r"\s+", " ", text)
+    text = re.sub(r"\s+\.\s+", ".", text)
+    return re.text
+
+def arabic_cleaner(text: str) -> str:
+    text = remove_punctuations(text)
+    text = east_to_west_num(text)
+    text = remove_diacritics(text)
+    text = remove_non_alphanumeric(text)
+    text = remove_single_char_word(text)
+    text = remove_extra_space(text)
+    return text
+
+
+
 def preprocess_utterance(utterance):
     # Do some normalisation work and split utterance to words
+    utterance=arabic_cleaner(utterance)
     utterance = utterance.replace(u'AF', u'F')
     utterance = utterance.replace(u'\u0640', u'')
     utterance = utterance.replace(u'o', u'')
@@ -389,3 +464,4 @@ def process_utterance(utterance):
                                 for phones in phonemes)
 
     return final_sequence
+
