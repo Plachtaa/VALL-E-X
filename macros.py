@@ -9,7 +9,7 @@ lang2token = {
     'zh': "[ZH]",
     'ja': "[JA]",
     "en": "[EN]",
-    "AR": "[AR]",
+    "ar": "[AR]",
     'mix': "",
 }
 
