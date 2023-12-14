@@ -28,7 +28,7 @@ stop_stage=1000
 # download it from https://arabicspeech.org/mgb2 
 
 dl_dir=$PWD/download
-
+#==================== there is some problem in this ==================#
 . shared/parse_options.sh || exit 1
 
 # vocab size for sentence piece models.
@@ -56,7 +56,7 @@ if [ $stage -le 0 ] && [ $stop_stage -ge 0 ]; then
   # If you have pre-downloaded it to /path/to/MGB2,
   # you can create a symlink
   #
-  #   ln -sfv /path/to/mgb2 $dl_dir/MGB2
+   #  ln -sfv D:\\MachineCourse\\Graduation_Project\\dev $dl_dir/MGB2
 
   # If you have pre-downloaded it to /path/to/musan,
   # you can create a symlink

@@ -96,7 +96,7 @@ def discover_valle_version() -> str:
 
 
 def mark_valle_version(version: str) -> None:
-    (project_root / "valle" / "version.py").write_text(
+    (project_root / "version.py").write_text(
         f'__version__ = "{version}"'
     )
 
@@ -129,7 +129,7 @@ except ImportError:
     install_requires.extend(["torch", "torchaudio"])
 
 docs_require = (
-    (project_root / "docs" / "requirements.txt").read_text().splitlines()
+    (project_root / "requirements.txt").read_text().splitlines()
 )
 tests_require = [
     # "pytest==7.1.3",
