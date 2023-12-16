@@ -41,7 +41,7 @@ if [ $stage -le 0 ] && [ $stop_stage -ge 0 ]; then
   #
   #   ln -sfv /path/to/mgb2 $dl_dir/mgb2
   #
-  if [ ! -d $dl_dir/aishell/dev ]; then
+  if [ ! -d $dl_dir/mgb2/dev ]; then
     lhotse download mgb2 $dl_dir
   fi
 fi
@@ -75,7 +75,7 @@ fi
 
 if [ $stage -le 3 ] && [ $stop_stage -ge 3 ]; then
   log "Stage 3: Prepare mgb2 train/dev/test"
-  if [ ! -e ${audio_feats_dir}/.aishell.train.done ]; then
+  if [ ! -e ${audio_feats_dir}/.mgb2.train.done ]; then
    
     lhotse subset --first 400 \
         ${audio_feats_dir}/mgb2_cuts_dev.jsonl.gz \
