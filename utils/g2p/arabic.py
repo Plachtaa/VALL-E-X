@@ -159,12 +159,6 @@ def isFixedWord(word, results,pronunciations):
             pronunciations.append(fixedWords[wordConsonants].split(' '))
     return results
 
-
-#====================== arabic cleaners ===================#
-def remove_diacritics(text: str) -> str:
-    # https://unicode-table.com/en/blocks/arabic/
-    return re.sub(r"[\u064B-\u0652\u06D4\u0670\u0674\u06D5-\u06ED]+", "", text)
-
 def remove_punctuations(text: str) -> str:
     """This function  removes all punctuations except the verbatim"""
 
@@ -182,40 +176,6 @@ def remove_non_alphanumeric(text: str) -> str:
     text = text.lower()
     return re.sub(r"[^\u0600-\u06FF\s\da-z]+", "", text)
 
-def remove_single_char_word(text: str) -> str:
-    """
-    Remove single character word from text
-    Example: I am in a a home for two years => am in home for two years
-    Args:
-            text (str): text
-    Returns:
-            (str): text with single char removed
-    """
-    words = text.split()
-
-    filter_words = [word for word in words if len(word) > 1 or word.isnumeric()]
-    return " ".join(filter_words)
-
-
-def east_to_west_num(text: str) -> str:
-    eastern_to_western = {
-        "٠": "0",
-        "١": "1",
-        "٢": "2",
-        "٣": "3",
-        "٤": "4",
-        "٥": "5",
-        "٦": "6",
-        "٧": "7",
-        "٨": "8",
-        "٩": "9",
-        "٪": "%",
-        "_": " ",
-        "ڤ": "ف",
-        "|": " ",
-    }
-    trans_string = str.maketrans(eastern_to_western)
-    return text.translate(trans_string)
 
 def remove_extra_space(text: str) -> str:
     text = re.sub(r"\s+", " ", text)
@@ -224,10 +184,6 @@ def remove_extra_space(text: str) -> str:
 
 def arabic_cleaner(text: str) -> str:
     text = remove_punctuations(text)
-    text = east_to_west_num(text)
-    text = remove_diacritics(text)
-    text = remove_non_alphanumeric(text)
-    text = remove_single_char_word(text)
     text = remove_extra_space(text)
     return text
 
