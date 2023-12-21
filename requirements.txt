@@ -21,3 +21,4 @@ nltk
 sudachipy
 sudachidict_core
 vocos
+mishkal

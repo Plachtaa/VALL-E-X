@@ -1,12 +1,10 @@
-#!/usr/bin/python
-# -*- coding: UTF8 -*-
-
-# adapted from: https://github.com/nawarhalabi/Arabic-Phonetiser/blob/master/phonetise-Buckwalter.py
-# license: Creative Commons Attribution-NonCommercial 4.0 International License.
-# https://creativecommons.org/licenses/by-nc/4.0/
-
+from arabic_cleaner import clean_arabic_text
+import mishkal.tashkeel
 import re
 from string import punctuation
+import nltk
+from nltk.tokenize import word_tokenize
+nltk.download('punkt')  
 
 arabic_to_buckw_dict = {  # mapping from Arabic script to Buckwalter
     u'\u0628': u'b', u'\u0630': u'*', u'\u0637': u'T', u'\u0645': u'm',
@@ -45,17 +43,6 @@ def arabic_to_buckwalter(word):  # Convert input string to Buckwalter
         else:
             res += letter
     return res
-
-
-def buckwalter_to_arabic(word):  # Convert input string to Arabic
-    res = ''
-    for letter in word:
-        if(letter in buckw_to_arabic_dict):
-            res += buckw_to_arabic_dict[letter]
-        else:
-            res += letter
-    return res
-
 
 # ----------------------------------------------------------------------------
 # Grapheme to Phoneme mappings------------------------------------------------
@@ -159,65 +146,58 @@ def isFixedWord(word, results,pronunciations):
             pronunciations.append(fixedWords[wordConsonants].split(' '))
     return results
 
-def remove_punctuations(text: str) -> str:
-    """This function  removes all punctuations except the verbatim"""
-
-    arabic_punctuations = """﴿﴾`÷×؛<>_()*&^%][ـ،/:"؟.,'{}~¦+|!”…“–ـ"""
-    english_punctuations = punctuation
-    # remove all non verbatim punctuations
-    all_punctuations = set(arabic_punctuations + english_punctuations)
-
-    for p in all_punctuations:
-        if p in text:
-            text = text.replace(p, " ")
-    return text
-
-def remove_non_alphanumeric(text: str) -> str:
-    text = text.lower()
-    return re.sub(r"[^\u0600-\u06FF\s\da-z]+", "", text)
 
 
-def remove_extra_space(text: str) -> str:
     text = re.sub(r"\s+", " ", text)
     text = re.sub(r"\s+\.\s+", ".", text)
     return re.text
 
-def arabic_cleaner(text: str) -> str:
-    text = remove_punctuations(text)
-    text = remove_extra_space(text)
+#dacritics all text#
+def dacritics_text(text):
+    vocalizer = mishkal.tashkeel.TashkeelClass()
+    text=vocalizer.tashkeel(text)
     return text
 
+def arabic_word_tokenize(text):
+    #words contain all words in text
+    words = word_tokenize(text)
+    return words
 
-
-def preprocess_utterance(utterance):
-    # Do some normalisation work and split utterance to words
-    utterance=arabic_cleaner(utterance)
-    utterance = utterance.replace(u'AF', u'F')
-    utterance = utterance.replace(u'\u0640', u'')
-    utterance = utterance.replace(u'o', u'')
-    utterance = utterance.replace(u'aA', u'A')
-    utterance = utterance.replace(u'aY', u'Y')
-    utterance = utterance.replace(u' A', u' ')
-    utterance = utterance.replace(u'F', u'an')
-    utterance = utterance.replace(u'N', u'un')
-    utterance = utterance.replace(u'K', u'in')
-    utterance = utterance.replace(u'|', u'>A')
-
-    utterance = utterance.replace('i~', '~i') 
-    utterance = utterance.replace('a~', '~a') 
-    utterance = utterance.replace('u~', '~u')
-
-    utterance = utterance.replace('lA~a', 'l~aA')
+def preprocess_text(text):
+    utterance=""
+    #=============== dacritics arabic text =========== #
+    text=clean_arabic_text(text)
+    text=dacritics_text(text)
+    words=arabic_word_tokenize(text)
+    for word in words:
+         #convert each  word into phone #
+         arabic_to_buckwalter(word)
+         word = word.replace(u'AF', u'F')
+         word = word.replace(u'\u0640', u'')
+         word = word.replace(u'o', u'')
+         word = word.replace(u'aA', u'A')
+         word = word.replace(u'aY', u'Y')
+         word = word.replace(u' A', u' ')
+         word = word.replace(u'F', u'an')
+         word = word.replace(u'N', u'un')
+         word = word.replace(u'K', u'in')
+         word = word.replace(u'|', u'>A')
+         word = word.replace('i~', '~i') 
+         word = word.replace('a~', '~a') 
+         word =word.replace('u~', '~u')
+         word = word.replace('lA~a', 'l~aA')
 
     # Deal with Hamza types that when not followed by a short vowel letter,
     # this short vowel is added automatically
-    utterance = re.sub(u'Ai', u'<i', utterance)
-    utterance = re.sub(u'Aa', u'>a', utterance)
-    utterance = re.sub(u'Au', u'>u', utterance)
-    utterance = re.sub(u'^>([^auAw])', u'>a\\1', utterance)
-    utterance = re.sub(u' >([^auAw ])', u' >a\\1', utterance)
-    utterance = re.sub(u'<([^i])', u'<i\\1', utterance)
-    utterance = utterance.split(u' ')
+         word = re.sub(u'Ai', u'<i', word)
+         word = re.sub(u'Aa', u'>a', word)
+         word = re.sub(u'Au', u'>u', word)
+         word = re.sub(u'^>([^auAw])', u'>a\\1', word)
+         word = re.sub(u' >([^auAw ])', u' >a\\1',word)
+         word = re.sub(u'<([^i])', u'<i\\1', word)
+         word = word.split(u' ')
+         utterance+=word
+   
 
     return utterance
 
@@ -405,14 +385,10 @@ def process_word(word):
 
 def process_utterance(utterance):
 
-    utterance = preprocess_utterance(utterance)
+    utterance = preprocess_text(utterance)
     phonemes = []
 
     for word in utterance:
-        if(word in ['-', 'sil']):
-            phonemes.append(['sil'])
-            continue
-
         phonemes_word = process_word(word)
         phonemes.append(phonemes_word)
 
