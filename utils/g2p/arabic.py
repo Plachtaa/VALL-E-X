@@ -4,7 +4,7 @@ import re
 from string import punctuation
 import nltk
 from nltk.tokenize import word_tokenize
-nltk.download('punkt')  
+#nltk.download('punkt')  
 
 arabic_to_buckw_dict = {  # mapping from Arabic script to Buckwalter
     u'\u0628': u'b', u'\u0630': u'*', u'\u0637': u'T', u'\u0645': u'm',
@@ -117,7 +117,7 @@ fixedWords = {
 }
 
 
-def isFixedWord(word, results,pronunciations):
+def isFixedWord(word, results, orthography, pronunciations):
     lastLetter = ''
     if(len(word) > 0):
         lastLetter = word[-1]
@@ -155,49 +155,55 @@ def isFixedWord(word, results,pronunciations):
 #dacritics all text#
 def dacritics_text(text):
     vocalizer = mishkal.tashkeel.TashkeelClass()
-    text=vocalizer.tashkeel(text)
-    return text
+    diacritized_text = vocalizer.tashkeel(text)
+    
+    # Join the list into a string
+    diacritized_text = ''.join("" if item is None else item for item in diacritized_text)
 
-def arabic_word_tokenize(text):
+    return diacritized_text
+
+
+
+""" def arabic_word_tokenize(text):
     #words contain all words in text
     words = word_tokenize(text)
     return words
+ """
 
-def preprocess_text(text):
-    utterance=""
-    #=============== dacritics arabic text =========== #
-    text=clean_arabic_text(text)
-    text=dacritics_text(text)
-    words=arabic_word_tokenize(text)
-    for word in words:
-         #convert each  word into phone #
-         arabic_to_buckwalter(word)
-         word = word.replace(u'AF', u'F')
-         word = word.replace(u'\u0640', u'')
-         word = word.replace(u'o', u'')
-         word = word.replace(u'aA', u'A')
-         word = word.replace(u'aY', u'Y')
-         word = word.replace(u' A', u' ')
-         word = word.replace(u'F', u'an')
-         word = word.replace(u'N', u'un')
-         word = word.replace(u'K', u'in')
-         word = word.replace(u'|', u'>A')
-         word = word.replace('i~', '~i') 
-         word = word.replace('a~', '~a') 
-         word =word.replace('u~', '~u')
-         word = word.replace('lA~a', 'l~aA')
+def preprocess_utterance(utterance):
+    #utterance=clean_arabic_text(utterance)
+    #print(utterance)
+    utterance=dacritics_text(utterance)
+    utterance=arabic_to_buckwalter(utterance)
+   
+   
+    # Do some normalisation work and split utterance to words
+    utterance = utterance.replace(u'AF', u'F')
+    utterance = utterance.replace(u'\u0640', u'')
+    utterance = utterance.replace(u'o', u'')
+    utterance = utterance.replace(u'aA', u'A')
+    utterance = utterance.replace(u'aY', u'Y')
+    utterance = utterance.replace(u' A', u' ')
+    utterance = utterance.replace(u'F', u'an')
+    utterance = utterance.replace(u'N', u'un')
+    utterance = utterance.replace(u'K', u'in')
+    utterance = utterance.replace(u'|', u'>A')
+
+    utterance = utterance.replace('i~', '~i') 
+    utterance = utterance.replace('a~', '~a') 
+    utterance = utterance.replace('u~', '~u')
+
+    utterance = utterance.replace('lA~a', 'l~aA')
 
     # Deal with Hamza types that when not followed by a short vowel letter,
     # this short vowel is added automatically
-         word = re.sub(u'Ai', u'<i', word)
-         word = re.sub(u'Aa', u'>a', word)
-         word = re.sub(u'Au', u'>u', word)
-         word = re.sub(u'^>([^auAw])', u'>a\\1', word)
-         word = re.sub(u' >([^auAw ])', u' >a\\1',word)
-         word = re.sub(u'<([^i])', u'<i\\1', word)
-         word = word.split(u' ')
-         utterance+=word
-   
+    utterance = re.sub(u'Ai', u'<i', utterance)
+    utterance = re.sub(u'Aa', u'>a', utterance)
+    utterance = re.sub(u'Au', u'>u', utterance)
+    utterance = re.sub(u'^>([^auAw])', u'>a\\1', utterance)
+    utterance = re.sub(u' >([^auAw ])', u' >a\\1', utterance)
+    utterance = re.sub(u'<([^i])', u'<i\\1', utterance)
+    utterance = utterance.split(u' ')
 
     return utterance
 
@@ -385,15 +391,29 @@ def process_word(word):
 
 def process_utterance(utterance):
 
-    utterance = preprocess_text(utterance)
+    utterance = preprocess_utterance(utterance)
     phonemes = []
 
     for word in utterance:
         phonemes_word = process_word(word)
         phonemes.append(phonemes_word)
 
-    final_sequence = ' + '.join(' '.join(phon for phon in phones)
+    final_sequence = ' '.join(' '.join(phon for phon in phones)
                                 for phones in phonemes)
 
     return final_sequence
 
+
+""" 
+my_list = []  # Choose a different name
+
+if __name__ == "__main__":
+    text = "السلام عليكم و رحمة الله و بركاته"
+    #text =clean_arabic_text(text)
+    #text=preprocess_utterance(text)
+    print(text)
+    #print(utterance)
+    final_sequence = process_utterance(text)
+    #text=arabic_to_buckwalter(text)
+    print(final_sequence)
+  """

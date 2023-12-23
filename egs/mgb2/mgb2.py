@@ -196,20 +196,20 @@ _unicode = (
     "\u062d\u062f\u0631\u0633\u0635\u0637\u0639\u0641\u0643\u0645\u0647\u0649"
     "\u064b\u064d\u064f\u0651\u0671"
 )
-_buckwalter = "|&}btjGx*z$DZg_qlnwyNaio`PJ'><VApvHdrsSTEfkmhYFKu~{"
+##_buckwalter = "|&}btjGx*z$DZg_qlnwyNaio`PJ'><VApvHdrsSTEfkmhYFKu~{"
 
-_backward_map = {ord(b): a for a, b in zip(_unicode, _buckwalter)}
+##_backward_map = {ord(b): a for a, b in zip(_unicode, _buckwalter)}
 
 
-def from_buck_walter(s: str) -> str:
+""" def from_buck_walter(s: str) -> str:
     return s.translate(_backward_map)
+ """
 
-
-def remove_diacritics(text: str) -> str:
+""" def remove_diacritics(text: str) -> str:
     # https://unicode-table.com/en/blocks/arabic/
     return sub(r"[\u064B-\u0652\u06D4\u0670\u0674\u06D5-\u06ED]+", "", text)
 
-
+ """
 def remove_punctuations(text: str) -> str:
     """This function  removes all punctuations except the verbatim"""
 
@@ -274,7 +274,7 @@ def remove_extra_space(text: str) -> str:
 def cleaning(text: str) -> str:
     text = remove_punctuations(text)
     text = east_to_west_num(text)
-    text = remove_diacritics(text)
+    #text = remove_diacritics(text)
     text = remove_non_alphanumeric(text)
     text = remove_single_char_word(text)
     text = remove_extra_space(text)

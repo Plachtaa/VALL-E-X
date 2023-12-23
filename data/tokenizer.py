@@ -124,3 +124,4 @@ if __name__ == "__main__":
     codes_norm = model.encode(samples)
 
     assert torch.allclose(codes_raw[0][0], codes_norm[0][0])
+    print("finish")
