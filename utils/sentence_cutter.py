@@ -2,13 +2,27 @@ import nltk
 import jieba
 import sudachipy
 import langid
+<<<<<<< HEAD
 langid.set_languages(['en', 'zh', 'ja'])
+=======
+nltk.download('punkt')
+langid.set_languages(['en', 'zh', 'ja','ar'])
+>>>>>>> master
 
 def split_text_into_sentences(text):
     if langid.classify(text)[0] == "en":
         sentences = nltk.tokenize.sent_tokenize(text)
+<<<<<<< HEAD
 
         return sentences
+=======
+  
+        return sentences
+    elif langid.classify(text)[0] == "ar":
+         sentences = nltk.tokenize.sent_tokenize(text)
+         return sentences
+     
+>>>>>>> master
     elif langid.classify(text)[0] == "zh":
         sentences = []
         segs = jieba.cut(text, cut_all=False)
@@ -44,6 +58,12 @@ def split_text_into_sentences(text):
 long_text = """
 This is a very long paragraph, so most TTS model is unable to handle it. Hence, we have to split it into several sentences. With the help of NLTK, we can split it into sentences. However, the punctuation is not preserved, so we have to add it back. How are we going to do write this code? Let's see. 
 """
+<<<<<<< HEAD
+=======
+long_text = """
+هذه فقرة طويلة جدًا، لذا فإن معظم نماذج تحويل النص الى صوت غير قادرة على التعامل معها .ولذلك، علينا أن نقسمها الى عدة جمل . و بمساعدة مكتبة نلتك ، يمكننا تقسيمها الى جمل  . ومع ذلك ، لم يتم الحفاظ على علامات الترقيم ، لذا يجب علينا اضافتها مرة اخرى . كيف سنقوم بكتابة هذا الكود ؟ دعنا نرى .   
+"""
+>>>>>>> master
 
 long_text = """
 现在我们要来尝试一下中文分句。因为很不幸的是，NLTK不支持中文分句。幸运的是，我们可以使用jieba来分句。但是，jieba分句后，标点符号会丢失，所以我们要手动添加回去。我现在正在想办法把这个例句写的更长更复杂一点，来测试jieba分句的性能。嗯......省略号，感觉不太好，因为省略号不是句号，所以jieba不会把它当作句子的结尾。会这样吗？我们来试试看。

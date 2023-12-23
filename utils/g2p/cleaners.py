@@ -2,7 +2,12 @@ import re
 from utils.g2p.japanese import japanese_to_romaji_with_accent, japanese_to_ipa, japanese_to_ipa2, japanese_to_ipa3
 from utils.g2p.mandarin import number_to_chinese, chinese_to_bopomofo, latin_to_bopomofo, chinese_to_romaji, chinese_to_lazy_ipa, chinese_to_ipa, chinese_to_ipa2
 from utils.g2p.english import english_to_lazy_ipa, english_to_ipa2, english_to_lazy_ipa2
+<<<<<<< HEAD
 patterns = [r'\[EN\](.*?)\[EN\]', r'\[ZH\](.*?)\[ZH\]', r'\[JA\](.*?)\[JA\]']
+=======
+from utils.g2p.arabic import process_utterance
+patterns = [r'\[EN\](.*?)\[EN\]', r'\[ZH\](.*?)\[ZH\]', r'\[JA\](.*?)\[JA\]',r'\[AR\](.*?)\[AR\]']
+>>>>>>> master
 def japanese_cleaners(text):
     text = japanese_to_romaji_with_accent(text)
     text = re.sub(r'([A-Za-z])$', r'\1.', text)
@@ -19,6 +24,14 @@ def chinese_cleaners(text):
     text = re.sub(r'([ˉˊˇˋ˙])$', r'\1。', text)
     return text
 
+<<<<<<< HEAD
+=======
+
+
+
+#========================== end =========================#
+
+>>>>>>> master
 def cje_cleaners(text):
     matches = []
     for pattern in patterns:
@@ -38,6 +51,11 @@ def cje_cleaners(text):
             lang = 'zh'
         elif "[JA]" in text_segment:
             lang = 'ja'
+<<<<<<< HEAD
+=======
+        elif "[AR]" in text_segment:
+            lang = 'ar'
+>>>>>>> master
         else:
             raise ValueError("If you see this error, please report this bug to issues.")
         outputs += phon
@@ -56,6 +74,17 @@ def clean_one(text):
     if text.find('[EN]') != -1:
         text = re.sub(r'\[EN\](.*?)\[EN\]',
                       lambda x: english_to_ipa2(x.group(1))+' ', text)
+<<<<<<< HEAD
     text = re.sub(r'\s+$', '', text)
     text = re.sub(r'([^\.,!\?\-…~])$', r'\1.', text)
     return text
+=======
+        #=================== add arabic phonitics =======================#
+    if text.find('[AR]') != -1:
+        text = re.sub(r'\[AR\](.*?)\[AR\]',
+                      lambda x:process_utterance(x.group(1))+' ', text)
+    text = re.sub(r'\s+$', '', text)
+    text = re.sub(r'([^\.,!\?\-…~])$', r'\1.', text)
+    return text
+
+>>>>>>> master

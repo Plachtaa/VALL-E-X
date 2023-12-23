@@ -35,6 +35,10 @@ language_dict = {
     'en': 0,
     'zh': 1,
     'ja': 2,
+<<<<<<< HEAD
+=======
+    'ar':3
+>>>>>>> master
 }
 def seq2phone(tokens: Union[List, np.ndarray]):
     """
