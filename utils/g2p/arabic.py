@@ -154,8 +154,6 @@ def isFixedWord(word, results, orthography, pronunciations):
 def dacritics_text(text):
     vocalizer = mishkal.tashkeel.TashkeelClass()
     diacritized_text = vocalizer.tashkeel(text)
-    
-    # Join the list into a string
     diacritized_text = ''.join("" if item is None else item for item in diacritized_text)
 
     return diacritized_text
