@@ -148,9 +148,7 @@ def isFixedWord(word, results, orthography, pronunciations):
 
 
 
-    text = re.sub(r"\s+", " ", text)
-    text = re.sub(r"\s+\.\s+", ".", text)
-    return re.text
+
 
 #dacritics all text#
 def dacritics_text(text):
