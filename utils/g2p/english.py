@@ -186,3 +186,9 @@ def english_to_lazy_ipa2(text):
     for regex, replacement in _lazy_ipa2:
         text = re.sub(regex, replacement, text)
     return text
+
+
+
+if __name__ == '__main__':
+    text = "He wound it around the wound"
+    print(english_to_lazy_ipa2(text))
