@@ -4,11 +4,8 @@ import torch
 from vocos import Vocos
 import logging
 import langid
-<<<<<<< HEAD
-langid.set_languages(['en', 'zh', 'ja'])
-=======
 langid.set_languages(['en', 'zh', 'ja','ar'])
->>>>>>> master
+
 
 import pathlib
 import platform
