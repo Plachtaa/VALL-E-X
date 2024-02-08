@@ -400,16 +400,17 @@ def process_utterance(utterance):
     return final_sequence
 
 
-""" 
 my_list = []  # Choose a different name
 
 if __name__ == "__main__":
     text = "السلام عليكم و رحمة الله و بركاته"
+    final_sequence = process_utterance(text)
+    print(final_sequence)
+    textdect = dacritics_text(text)
     #text =clean_arabic_text(text)
     #text=preprocess_utterance(text)
-    print(text)
+    print(textdect)
     #print(utterance)
-    final_sequence = process_utterance(text)
+    final_sequence = process_utterance(textdect)
     #text=arabic_to_buckwalter(text)
     print(final_sequence)
-  """
