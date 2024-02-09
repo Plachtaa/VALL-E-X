@@ -324,3 +324,5 @@ def chinese_to_ipa2(text):
     text = re.sub(r'([ʂɹ]ʰ?)([˩˨˧˦˥ ]+|$)', r'\1ʅ\2', text)
     text = re.sub(r'(sʰ?)([˩˨˧˦˥ ]+|$)', r'\1ɿ\2', text)
     return text
+if __name__ == "__main__":
+    print(chinese_to_ipa("欢迎回来"))

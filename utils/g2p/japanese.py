@@ -152,3 +152,6 @@ def japanese_to_ipa3(text):
         r'([aiɯeo])\1+', lambda x: x.group(0)[0]+'ː'*(len(x.group(0))-1), text)
     text = re.sub(r'((?:^|\s)(?:ts|tɕ|[kpt]))', r'\1ʰ', text)
     return text
+
+if __name__ == "__main__":
+    print(japanese_to_ipa2("おかえり"))

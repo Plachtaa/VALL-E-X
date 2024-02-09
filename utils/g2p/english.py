@@ -187,9 +187,15 @@ def english_to_lazy_ipa2(text):
         text = re.sub(regex, replacement, text)
     return text
 
+<<<<<<< HEAD
 
 
 """ if __name__ == '__main__':
     text = "He wound it around the wound"
     print(english_to_lazy_ipa2(text))
  """
+=======
+if __name__ == "__main__":
+    text = "Welcome to phonetic"
+    print(english_to_ipa2(text))
+>>>>>>> f77c0558c0b1aed0e66025d3bda77a2145a7dad9
