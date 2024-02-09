@@ -21,7 +21,5 @@ nltk
 sudachipy
 sudachidict_core
 vocos
-<<<<<<< HEAD
-=======
-mishkal
->>>>>>> master
+transformers
+accelerate

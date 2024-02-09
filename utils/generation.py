@@ -66,9 +66,9 @@ def preload_models():
                 "\n manually download model weights and put it to {} .".format(os.getcwd() + "\checkpoints"))
     # VALL-E
     model = VALLE(
-        N_DIM,
-        NUM_HEAD,
-        NUM_LAYERS,
+        N_DIM,  #1024
+        NUM_HEAD, #16
+        NUM_LAYERS, #!2
         norm_first=True,
         add_prenet=False,
         prefix_mode=PREFIX_MODE,

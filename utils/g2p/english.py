@@ -189,6 +189,7 @@ def english_to_lazy_ipa2(text):
 
 
 
-if __name__ == '__main__':
+""" if __name__ == '__main__':
     text = "He wound it around the wound"
     print(english_to_lazy_ipa2(text))
+ """
