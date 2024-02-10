@@ -38,14 +38,12 @@ def remove_diacritics(text):
     text = re.sub(arabic_diacritics, '', text)
     return text
 
-<<<<<<< HEAD
 def remove_extra_space(text: str) -> str:
     text = re.sub(r"\s+", " ", text)
     text = re.sub(r"\s+\.\s+", ".", text)
     return text
 
-=======
->>>>>>> f77c0558c0b1aed0e66025d3bda77a2145a7dad9
+
 
 def remove_punctuations(text):
     translator = str.maketrans('', '', punctuations_list)
@@ -61,10 +59,7 @@ def arabic_cleaner(text):
     text=remove_punctuations(text)
     text=remove_repeating_char(text)
     text=remove_numbers(text)
-<<<<<<< HEAD
     text=remove_extra_space(text)
-=======
->>>>>>> f77c0558c0b1aed0e66025d3bda77a2145a7dad9
     return text
 
 #=================== convert arabic text into ipa ===================#
@@ -81,18 +76,15 @@ def arabic_to_ipa(text):
 
 
 
-<<<<<<< HEAD
+
 
 """ if __name__ == '__main__':
     text ="ظاهر"
     print(arabic_to_ipa(text))
   """
-=======
 my_list = []  # Choose a different name
 """ if __name__ == '__main__':
     text ="ظاهر"
     print(arabic_to_ipa(text))
  """
-  """
- """
->>>>>>> f77c0558c0b1aed0e66025d3bda77a2145a7dad9
+
