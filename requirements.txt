@@ -21,3 +21,5 @@ nltk
 sudachipy
 sudachidict_core
 vocos
+transformers
+accelerate

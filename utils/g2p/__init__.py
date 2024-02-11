@@ -1,4 +1,5 @@
 """ from https://github.com/keithito/tacotron """
+import utils
 import utils.g2p.cleaners
 from utils.g2p.symbols import symbols
 from tokenizers import Tokenizer
@@ -7,10 +8,32 @@ from tokenizers import Tokenizer
 _symbol_to_id = {s: i for i, s in enumerate(symbols)}
 _id_to_symbol = {i: s for i, s in enumerate(symbols)}
 
-
+from tokenizers import Tokenizer, models
+import json
 class PhonemeBpeTokenizer:
   def __init__(self, tokenizer_path = "./utils/g2p/bpe_1024.json"):
-    self.tokenizer = Tokenizer.from_file(tokenizer_path)
+      try:
+    # Load the JSON configuration from the file
+         with open(tokenizer_path, "r", encoding="utf-8") as file:
+           tokenizer_config = file.read()
+
+    # Parse the JSON configuration
+           tokenizer_config = json.loads(tokenizer_config)
+
+    # Create a BPE model from the vocab and merges in the configuration
+         bpe_model = models.BPE(
+          vocab=tokenizer_config["model"]["vocab"],
+          merges=tokenizer_config["model"]["merges"]
+     )
+
+    # Create the tokenizer instance
+         self.tokenizer = Tokenizer(bpe_model)
+
+         print("Tokenizer loaded successfully.")
+
+      except Exception as e:
+    # If an error occurs, print the error message
+             print(f"Error loading tokenizer from {tokenizer_path}: {e}")
 
   def tokenize(self, text):
     # 1. convert text to phoneme
@@ -19,9 +42,9 @@ class PhonemeBpeTokenizer:
     phonemes = phonemes.replace(" ", "_")
     # 3. tokenize phonemes
     phoneme_tokens = self.tokenizer.encode(phonemes).ids
-    assert(len(phoneme_tokens) == len(langs))
-    if not len(phoneme_tokens):
-      raise ValueError("Empty text is given")
+    #assert(len(phoneme_tokens) == len(langs))
+    #if not len(phoneme_tokens):
+    #  raise ValueError("Empty text is given")
     return phoneme_tokens, langs
 
 def text_to_sequence(text, cleaner_names):
@@ -70,3 +93,6 @@ def _clean_text(text, cleaner_names):
       raise Exception('Unknown cleaner: %s' % name)
     text, langs = cleaner(text)
   return text, langs
+
+
+

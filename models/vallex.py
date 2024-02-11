@@ -439,22 +439,23 @@ class VALLE(VALLF):
         self.language_ID = {
             'en': 0,
             'zh': 1,
-            'ja': 2,
+            #'ja': 2,
+            'ar':2
         }
         self.ar_language_embedding = TokenEmbedding(d_model, len(self.language_ID))
         self.nar_language_embedding = TokenEmbedding(d_model, len(self.language_ID))
 
     def forward(
         self,
-        x: torch.Tensor,
-        x_lens: torch.Tensor,
-        y: Union[torch.Tensor, PromptedFeatures],
-        y_lens: Union[torch.Tensor, PromptedFeatures],
+        #x: torch.Tensor,
+        #x_lens: torch.Tensor,
+        #y: Union[torch.Tensor, PromptedFeatures],
+        #y_lens: Union[torch.Tensor, PromptedFeatures],
         reduction: str = "sum",
         train_stage: int = 0,
         **kwargs,
     ):
-        raise NotImplementedError
+       pass
     def inference(
         self,
         x: torch.Tensor,

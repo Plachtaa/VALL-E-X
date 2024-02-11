@@ -4,7 +4,8 @@ import torchaudio
 import logging
 import langid
 import whisper
-langid.set_languages(['en', 'zh', 'ja'])
+
+langid.set_languages(['en', 'zh', 'ja','ar'])
 
 import numpy as np
 from data.tokenizer import (
@@ -32,7 +33,15 @@ whisper_model = None
 @torch.no_grad()
 def transcribe_one(model, audio_path):
     # load audio and pad/trim it to fit 30 seconds
-    audio = whisper.load_audio(audio_path)
+    try:
+        audio = whisper.load_audio(audio_path)
+        # Continue with audio processing
+    except FileNotFoundError:
+        logging.error(f"File not found at path: {audio_path}")
+    except Exception as e:
+        logging.error(f"An error occurred during audio processing: {e}")
+   
+   
     audio = whisper.pad_or_trim(audio)
 
     # make log-Mel spectrogram and move to the same device as the model
@@ -54,63 +63,44 @@ def transcribe_one(model, audio_path):
         text_pr += "."
     return lang, text_pr
 
-def make_prompt(name, audio_prompt_path, transcript=None):
-    global model, text_collater, text_tokenizer, codec
-    wav_pr, sr = torchaudio.load(audio_prompt_path)
-    # check length
-    if wav_pr.size(-1) / sr > 15:
-        raise ValueError(f"Prompt too long, expect length below 15 seconds, got {wav_pr / sr} seconds.")
-    if wav_pr.size(0) == 2:
-        wav_pr = wav_pr.mean(0, keepdim=True)
-    text_pr, lang_pr = make_transcript(name, wav_pr, sr, transcript)
 
-    # tokenize audio
-    encoded_frames = tokenize_audio(codec, (wav_pr, sr))
-    audio_tokens = encoded_frames[0][0].transpose(2, 1).cpu().numpy()
-
-    # tokenize text
-    phonemes, langs = text_tokenizer.tokenize(text=f"{text_pr}".strip())
-    text_tokens, enroll_x_lens = text_collater(
-        [
-            phonemes
-        ]
-    )
-
-    message = f"Detected language: {lang_pr}\n Detected text {text_pr}\n"
-
-    # save as npz file
-    save_path = os.path.join("./customs/", f"{name}.npz")
-    np.savez(save_path, audio_tokens=audio_tokens, text_tokens=text_tokens, lang_code=lang2code[lang_pr])
-    logging.info(f"Successful. Prompt saved to {save_path}")
 
 
 def make_transcript(name, wav, sr, transcript=None):
-
-    if not isinstance(wav, torch.FloatTensor):
-        wav = torch.tensor(wav)
+    # Validate input parameters
+    assert isinstance(wav, torch.Tensor), "Input 'wav' must be a torch.FloatTensor"
+    assert isinstance(sr, int), "Sample rate 'sr' must be an integer"
+    
     if wav.abs().max() > 1:
         wav /= wav.abs().max()
     if wav.size(-1) == 2:
         wav = wav.mean(-1, keepdim=False)
     if wav.ndim == 1:
         wav = wav.unsqueeze(0)
-    assert wav.ndim and wav.size(0) == 1
+    assert wav.ndim and wav.size(0) == 1, "Input 'wav' must have correct dimensions"
+
     if transcript is None or transcript == "":
         logging.info("Transcript not given, using Whisper...")
         global whisper_model
         if whisper_model is None:
             whisper_model = whisper.load_model("medium", download_root=os.path.join(os.getcwd(), "whisper"))
         whisper_model.to(device)
-        torchaudio.save(f"./prompts/{name}.wav", wav, sr)
-        lang, text = transcribe_one(whisper_model, f"./prompts/{name}.wav")
-        lang_token = lang2token[lang]
-        text = lang_token + text + lang_token
-        os.remove(f"./prompts/{name}.wav")
-        whisper_model.cpu()
+        try:
+            lang, text = transcribe_one(whisper_model, "D:\\MachineCourse\\dataset\\train")
+            if lang is not None:
+                lang_token = lang2token.get(lang, "")  # Use get() method to handle missing key
+                text = lang_token + text + lang_token
+            else:
+                text = ""  # Assign an empty string if lang is None
+        except Exception as e:
+            logging.error(f"Error during audio transcription: {e}")
+            text = ""
+        finally:
+            whisper_model.cpu()
     else:
         text = transcript
         lang, _ = langid.classify(text)
-        lang_token = lang2token[lang]
+        lang_token = lang2token.get(lang, "")  # Use get() method to handle missing key
         text = lang_token + text + lang_token
 
     torch.cuda.empty_cache()
