@@ -8,9 +8,10 @@ import tempfile
 import platform
 import webbrowser
 import sys
+
 print(f"default encoding is {sys.getdefaultencoding()},file system encoding is {sys.getfilesystemencoding()}")
 print(f"You are using Python version {platform.python_version()}")
-if(sys.version_info[0]<3 or sys.version_info[1]<7):
+if (sys.version_info[0] < 3 or sys.version_info[1] < 7):
     print("The Python version is too low and may cause problems")
 
 if platform.system().lower() == 'windows':
@@ -22,9 +23,11 @@ else:
 os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 
 import langid
+
 langid.set_languages(['en', 'zh', 'ja'])
 
 import nltk
+
 nltk.data.path = nltk.data.path + [os.path.join(os.getcwd(), "nltk_data")]
 
 import torch
@@ -51,7 +54,7 @@ import multiprocessing
 
 thread_count = multiprocessing.cpu_count()
 
-print("Use",thread_count,"cpu cores for computing")
+print("Use", thread_count, "cpu cores for computing")
 
 torch.set_num_threads(thread_count)
 torch.set_num_interop_threads(thread_count)
@@ -71,8 +74,10 @@ if torch.backends.mps.is_available():
 if not os.path.exists("./checkpoints/"): os.mkdir("./checkpoints/")
 if not os.path.exists(os.path.join("./checkpoints/", "vallex-checkpoint.pt")):
     import wget
+
     try:
-        logging.info("Downloading model from https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt ...")
+        logging.info(
+            "Downloading model from https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt ...")
         # download from https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt to ./checkpoints/vallex-checkpoint.pt
         wget.download("https://huggingface.co/Plachta/VALL-E-X/resolve/main/vallex-checkpoint.pt",
                       out="./checkpoints/vallex-checkpoint.pt", bar=wget.bar_adaptive)
@@ -83,17 +88,17 @@ if not os.path.exists(os.path.join("./checkpoints/", "vallex-checkpoint.pt")):
             "\n manually download model weights and put it to {} .".format(os.getcwd() + "\checkpoints"))
 
 model = VALLE(
-        N_DIM,
-        NUM_HEAD,
-        NUM_LAYERS,
-        norm_first=True,
-        add_prenet=False,
-        prefix_mode=PREFIX_MODE,
-        share_embedding=True,
-        nar_scale_factor=1.0,
-        prepend_bos=True,
-        num_quantizers=NUM_QUANTIZERS,
-    )
+    N_DIM,
+    NUM_HEAD,
+    NUM_LAYERS,
+    norm_first=True,
+    add_prenet=False,
+    prefix_mode=PREFIX_MODE,
+    share_embedding=True,
+    nar_scale_factor=1.0,
+    prepend_bos=True,
+    num_quantizers=NUM_QUANTIZERS,
+)
 checkpoint = torch.load("./checkpoints/vallex-checkpoint.pt", map_location='cpu')
 missing_keys, unexpected_keys = model.load_state_dict(
     checkpoint["model"], strict=True
@@ -110,7 +115,7 @@ vocos = Vocos.from_pretrained('charactr/vocos-encodec-24khz').to(device)
 # ASR
 if not os.path.exists("./whisper/"): os.mkdir("./whisper/")
 try:
-    whisper_model = whisper.load_model("medium",download_root=os.path.join(os.getcwd(), "whisper")).cpu()
+    whisper_model = whisper.load_model("medium", download_root=os.path.join(os.getcwd(), "whisper")).cpu()
 except Exception as e:
     logging.info(e)
     raise Exception(
@@ -121,6 +126,7 @@ except Exception as e:
 # Voice Presets
 preset_list = os.walk("./presets/").__next__()[2]
 preset_list = [preset[:-4] for preset in preset_list if preset.endswith(".npz")]
+
 
 def clear_prompts():
     try:
@@ -135,6 +141,7 @@ def clear_prompts():
     except:
         return
 
+
 def transcribe_one(model, audio_path):
     # load audio and pad/trim it to fit 30 seconds
     audio = whisper.load_audio(audio_path)
@@ -148,7 +155,8 @@ def transcribe_one(model, audio_path):
     print(f"Detected language: {max(probs, key=probs.get)}")
     lang = max(probs, key=probs.get)
     # decode the audio
-    options = whisper.DecodingOptions(temperature=1.0, best_of=5, fp16=False if device == torch.device("cpu") else True, sample_len=150)
+    options = whisper.DecodingOptions(temperature=1.0, best_of=5, fp16=False if device == torch.device("cpu") else True,
+                                      sample_len=150)
     result = whisper.decode(model, mel, options)
 
     # print the recognized text
@@ -158,6 +166,7 @@ def transcribe_one(model, audio_path):
     if text_pr.strip(" ")[-1] not in "?!.,。，？！。、":
         text_pr += "."
     return lang, text_pr
+
 
 def make_npz_prompt(name, uploaded_audio, recorded_audio, transcript_content):
     global model, text_collater, text_tokenizer, audio_tokenizer
@@ -225,6 +234,7 @@ def make_prompt(name, wav, sr, save=True):
     whisper_model.cpu()
     torch.cuda.empty_cache()
     return text, lang
+
 
 @torch.no_grad()
 def infer_from_audio(text, language, accent, audio_prompt, record_audio_prompt, transcript_content):
@@ -294,7 +304,7 @@ def infer_from_audio(text, language, accent, audio_prompt, record_audio_prompt, 
         best_of=5,
     )
     # Decode with Vocos
-    frames = encoded_frames.permute(2,0,1)
+    frames = encoded_frames.permute(2, 0, 1)
     features = vocos.codes_to_features(frames)
     samples = vocos.decode(features, bandwidth_id=torch.tensor([2], device=device))
 
@@ -304,6 +314,7 @@ def infer_from_audio(text, language, accent, audio_prompt, record_audio_prompt, 
 
     message = f"text prompt: {text_pr}\nsythesized text: {text}"
     return message, (24000, samples.squeeze(0).cpu().numpy())
+
 
 @torch.no_grad()
 def infer_from_prompt(text, language, accent, preset_prompt, prompt_file):
@@ -355,7 +366,7 @@ def infer_from_prompt(text, language, accent, preset_prompt, prompt_file):
         best_of=5,
     )
     # Decode with Vocos
-    frames = encoded_frames.permute(2,0,1)
+    frames = encoded_frames.permute(2, 0, 1)
     features = vocos.codes_to_features(frames)
     samples = vocos.decode(features, bandwidth_id=torch.tensor([2], device=device))
 
@@ -367,6 +378,8 @@ def infer_from_prompt(text, language, accent, preset_prompt, prompt_file):
 
 
 from utils.sentence_cutter import split_text_into_sentences
+
+
 @torch.no_grad()
 def infer_long_text(text, preset_prompt, prompt=None, language='auto', accent='no-accent'):
     """
@@ -516,15 +529,17 @@ def main():
             gr.Markdown(infer_from_audio_md)
             with gr.Row():
                 with gr.Column():
-
                     textbox = gr.TextArea(label="Text",
                                           placeholder="Type your sentence here",
-                                          value="Welcome back, Master. What can I do for you today?", elem_id=f"tts-input")
-                    language_dropdown = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語'], value='auto-detect', label='language')
-                    accent_dropdown = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'], value='no-accent', label='accent')
+                                          value="Welcome back, Master. What can I do for you today?",
+                                          elem_id=f"tts-input")
+                    language_dropdown = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語'],
+                                                    value='auto-detect', label='language')
+                    accent_dropdown = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'], value='no-accent',
+                                                  label='accent')
                     textbox_transcript = gr.TextArea(label="Transcript",
-                                          placeholder="Write transcript here. (leave empty to use whisper)",
-                                          value="", elem_id=f"prompt-name")
+                                                     placeholder="Write transcript here. (leave empty to use whisper)",
+                                                     value="", elem_id=f"prompt-name")
                     upload_audio_prompt = gr.Audio(label='uploaded audio prompt', source='upload', interactive=True)
                     record_audio_prompt = gr.Audio(label='recorded audio prompt', source='microphone', interactive=True)
                 with gr.Column():
@@ -532,57 +547,63 @@ def main():
                     audio_output = gr.Audio(label="Output Audio", elem_id="tts-audio")
                     btn = gr.Button("Generate!")
                     btn.click(infer_from_audio,
-                              inputs=[textbox, language_dropdown, accent_dropdown, upload_audio_prompt, record_audio_prompt, textbox_transcript],
+                              inputs=[textbox, language_dropdown, accent_dropdown, upload_audio_prompt,
+                                      record_audio_prompt, textbox_transcript],
                               outputs=[text_output, audio_output])
                     textbox_mp = gr.TextArea(label="Prompt name",
-                                          placeholder="Name your prompt here",
-                                          value="prompt_1", elem_id=f"prompt-name")
+                                             placeholder="Name your prompt here",
+                                             value="prompt_1", elem_id=f"prompt-name")
                     btn_mp = gr.Button("Make prompt!")
                     prompt_output = gr.File(interactive=False)
                     btn_mp.click(make_npz_prompt,
-                                inputs=[textbox_mp, upload_audio_prompt, record_audio_prompt, textbox_transcript],
-                                outputs=[text_output, prompt_output])
+                                 inputs=[textbox_mp, upload_audio_prompt, record_audio_prompt, textbox_transcript],
+                                 outputs=[text_output, prompt_output])
             gr.Examples(examples=infer_from_audio_examples,
-                        inputs=[textbox, language_dropdown, accent_dropdown, upload_audio_prompt, record_audio_prompt, textbox_transcript],
+                        inputs=[textbox, language_dropdown, accent_dropdown, upload_audio_prompt, record_audio_prompt,
+                                textbox_transcript],
                         outputs=[text_output, audio_output],
                         fn=infer_from_audio,
-                        cache_examples=False,)
+                        cache_examples=False, )
         with gr.Tab("Make prompt"):
             gr.Markdown(make_prompt_md)
             with gr.Row():
                 with gr.Column():
                     textbox2 = gr.TextArea(label="Prompt name",
-                                          placeholder="Name your prompt here",
-                                          value="prompt_1", elem_id=f"prompt-name")
+                                           placeholder="Name your prompt here",
+                                           value="prompt_1", elem_id=f"prompt-name")
                     # 添加选择语言和输入台本的地方
                     textbox_transcript2 = gr.TextArea(label="Transcript",
-                                          placeholder="Write transcript here. (leave empty to use whisper)",
-                                          value="", elem_id=f"prompt-name")
+                                                      placeholder="Write transcript here. (leave empty to use whisper)",
+                                                      value="", elem_id=f"prompt-name")
                     upload_audio_prompt_2 = gr.Audio(label='uploaded audio prompt', source='upload', interactive=True)
-                    record_audio_prompt_2 = gr.Audio(label='recorded audio prompt', source='microphone', interactive=True)
+                    record_audio_prompt_2 = gr.Audio(label='recorded audio prompt', source='microphone',
+                                                     interactive=True)
                 with gr.Column():
                     text_output_2 = gr.Textbox(label="Message")
                     prompt_output_2 = gr.File(interactive=False)
                     btn_2 = gr.Button("Make!")
                     btn_2.click(make_npz_prompt,
-                              inputs=[textbox2, upload_audio_prompt_2, record_audio_prompt_2, textbox_transcript2],
-                              outputs=[text_output_2, prompt_output_2])
+                                inputs=[textbox2, upload_audio_prompt_2, record_audio_prompt_2, textbox_transcript2],
+                                outputs=[text_output_2, prompt_output_2])
             gr.Examples(examples=make_npz_prompt_examples,
                         inputs=[textbox2, upload_audio_prompt_2, record_audio_prompt_2, textbox_transcript2],
                         outputs=[text_output_2, prompt_output_2],
                         fn=make_npz_prompt,
-                        cache_examples=False,)
+                        cache_examples=False, )
         with gr.Tab("Infer from prompt"):
             gr.Markdown(infer_from_prompt_md)
             with gr.Row():
                 with gr.Column():
                     textbox_3 = gr.TextArea(label="Text",
-                                          placeholder="Type your sentence here",
-                                          value="Welcome back, Master. What can I do for you today?", elem_id=f"tts-input")
-                    language_dropdown_3 = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語', 'Mix'], value='auto-detect',
-                                                    label='language')
-                    accent_dropdown_3 = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'], value='no-accent',
-                                                  label='accent')
+                                            placeholder="Type your sentence here",
+                                            value="Welcome back, Master. What can I do for you today?",
+                                            elem_id=f"tts-input")
+                    language_dropdown_3 = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語', 'Mix'],
+                                                      value='auto-detect',
+                                                      label='language')
+                    accent_dropdown_3 = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'],
+                                                    value='no-accent',
+                                                    label='accent')
                     preset_dropdown_3 = gr.Dropdown(choices=preset_list, value=None, label='Voice preset')
                     prompt_file = gr.File(file_count='single', file_types=['.npz'], interactive=True)
                 with gr.Column():
@@ -590,23 +611,26 @@ def main():
                     audio_output_3 = gr.Audio(label="Output Audio", elem_id="tts-audio")
                     btn_3 = gr.Button("Generate!")
                     btn_3.click(infer_from_prompt,
-                              inputs=[textbox_3, language_dropdown_3, accent_dropdown_3, preset_dropdown_3, prompt_file],
-                              outputs=[text_output_3, audio_output_3])
+                                inputs=[textbox_3, language_dropdown_3, accent_dropdown_3, preset_dropdown_3,
+                                        prompt_file],
+                                outputs=[text_output_3, audio_output_3])
             gr.Examples(examples=infer_from_prompt_examples,
                         inputs=[textbox_3, language_dropdown_3, accent_dropdown_3, preset_dropdown_3, prompt_file],
                         outputs=[text_output_3, audio_output_3],
                         fn=infer_from_prompt,
-                        cache_examples=False,)
+                        cache_examples=False, )
         with gr.Tab("Infer long text"):
             gr.Markdown("This is a long text generation demo. You can use this to generate long audio. ")
             with gr.Row():
                 with gr.Column():
                     textbox_4 = gr.TextArea(label="Text",
-                                          placeholder="Type your sentence here",
-                                          value=long_text_example, elem_id=f"tts-input")
-                    language_dropdown_4 = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語'], value='auto-detect',
-                                                    label='language')
-                    accent_dropdown_4 = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'], value='no-accent',
+                                            placeholder="Type your sentence here",
+                                            value=long_text_example, elem_id=f"tts-input")
+                    language_dropdown_4 = gr.Dropdown(choices=['auto-detect', 'English', '中文', '日本語'],
+                                                      value='auto-detect',
+                                                      label='language')
+                    accent_dropdown_4 = gr.Dropdown(choices=['no-accent', 'English', '中文', '日本語'],
+                                                    value='no-accent',
                                                     label='accent')
                     preset_dropdown_4 = gr.Dropdown(choices=preset_list, value=None, label='Voice preset')
                     prompt_file_4 = gr.File(file_count='single', file_types=['.npz'], interactive=True)
@@ -615,11 +639,13 @@ def main():
                     audio_output_4 = gr.Audio(label="Output Audio", elem_id="tts-audio")
                     btn_4 = gr.Button("Generate!")
                     btn_4.click(infer_long_text,
-                              inputs=[textbox_4, preset_dropdown_4, prompt_file_4, language_dropdown_4, accent_dropdown_4],
-                              outputs=[text_output_4, audio_output_4])
+                                inputs=[textbox_4, preset_dropdown_4, prompt_file_4, language_dropdown_4,
+                                        accent_dropdown_4],
+                                outputs=[text_output_4, audio_output_4])
 
     webbrowser.open("http://127.0.0.1:7860")
     app.launch()
+
 
 if __name__ == "__main__":
     formatter = (
